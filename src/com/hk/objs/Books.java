@@ -6,12 +6,14 @@
 package com.hk.objs;
 
 import com.hk.database.Database;
+import java.util.ArrayList;
 
 /**
  *
  * @author hoangkien
  */
 public class Books {
+
     private int bookId;
     private String bookName;
     private String author;
@@ -20,7 +22,8 @@ public class Books {
     private String shelf;
     private int price;
 
-    public Books(String bookName, String author, String publishCom, int categoryId, String shelf, int price) {
+    public Books(String bookName, String author, String publishCom,
+            int categoryId, String shelf, int price) {
         this.bookName = bookName;
         this.author = author;
         this.publishCom = publishCom;
@@ -84,8 +87,20 @@ public class Books {
     public void setPrice(int price) {
         this.price = price;
     }
-    
+
     public boolean save() {
         return Database.saveBook(this);
+    }
+
+    public static ArrayList<Books> findBookByName(String name) {
+        return Database.findBookByName(name);
+    }
+
+    public static ArrayList<Books> findBookByAuthor(String author) {
+        return Database.findBookByAuthor(author);
+    }
+
+    public static ArrayList<Books> findBookByCategory(String category) {
+        return Database.findBookByCategory(category);
     }
 }
