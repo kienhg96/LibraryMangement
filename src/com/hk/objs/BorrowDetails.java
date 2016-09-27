@@ -16,9 +16,7 @@ public class BorrowDetails {
     private int borrowDetailId;
     private int borrowId;
     private int bookId;
-    private boolean isReturn;
-    private Date returnDate;
-
+    
     public int getBorrowDetailId() {
         return borrowDetailId;
     }
@@ -43,27 +41,9 @@ public class BorrowDetails {
         this.bookId = bookId;
     }
 
-    public boolean isIsReturn() {
-        return isReturn;
-    }
-
-    public void setIsReturn(boolean isReturn) {
-        this.isReturn = isReturn;
-    }
-
-    public Date getReturnDate() {
-        return returnDate;
-    }
-
-    public void setReturnDate(Date returnDate) {
-        this.returnDate = returnDate;
-    }
-
-    public BorrowDetails(int borrowId, int bookId, boolean isReturn, Date returnDate) {
+    public BorrowDetails(int borrowId, int bookId) {
         this.borrowId = borrowId;
         this.bookId = bookId;
-        this.isReturn = isReturn;
-        this.returnDate = returnDate;
     }
     
     public boolean save() {

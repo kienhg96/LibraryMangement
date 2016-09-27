@@ -5,12 +5,16 @@
  */
 package com.hk.database;
 
+import com.hk.authenticate.AdminsAuth;
 import com.hk.objs.Admins;
 import com.hk.objs.Books;
 import com.hk.objs.BorrowDetails;
 import com.hk.objs.Borrows;
 import com.hk.objs.Categories;
+import com.hk.objs.ReturnBooks;
 import com.hk.objs.Users;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.util.Date;
 import java.sql.DriverManager;
@@ -21,6 +25,8 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -41,6 +47,24 @@ public class Database {
                 System.out.println("VendorError: " + ex.getErrorCode());
             }
         }
+    }
+
+    public static String hashPassword(String password) {
+        MessageDigest digest;
+        String generatedPassword = null;
+        try {
+            digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(password.getBytes());
+            byte[] bytes = digest.digest();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString();
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return generatedPassword;
     }
 
     public static Users checkUserLogin(String username, String password) {
@@ -93,160 +117,206 @@ public class Database {
 
     public static boolean saveBook(Books book) {
         initialize(); // Remove after complete
-        try {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO books(bookName, author, publishCom, categoryId, shelf, price) "
-                    + "VALUES (?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, book.getBookName());
-            stmt.setString(2, book.getAuthor());
-            stmt.setString(3, book.getPublishCom());
-            stmt.setInt(4, book.getCategoryId());
-            stmt.setString(5, book.getShelf());
-            stmt.setInt(6, book.getPrice());
-            stmt.executeUpdate();
-            ResultSet key = stmt.getGeneratedKeys();
-            if (key.next()) {
-                book.setBookId(key.getInt(1));
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO books(bookName, author, publishCom, categoryId, shelf, price) "
+                        + "VALUES (?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+                stmt.setString(1, book.getBookName());
+                stmt.setString(2, book.getAuthor());
+                stmt.setString(3, book.getPublishCom());
+                stmt.setInt(4, book.getCategoryId());
+                stmt.setString(5, book.getShelf());
+                stmt.setInt(6, book.getPrice());
+                stmt.executeUpdate();
+                ResultSet key = stmt.getGeneratedKeys();
+                if (key.next()) {
+                    book.setBookId(key.getInt(1));
+                }
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+                return false;
             }
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+            return true;
+        } else {
             return false;
         }
-        return true;
     }
 
     public static boolean saveUser(Users user) {
         initialize(); // Remove after complete
-        try {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO users "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?);");
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
-            stmt.setString(3, user.getFullname());
-            stmt.setDate(4, new java.sql.Date(user.getBirthday().getTime()));
-            stmt.setString(5, user.getAddress());
-            stmt.setString(6, user.getPhone());
-            stmt.setDate(7, new java.sql.Date(user.getExpirationDate().getTime()));
-            //System.out.println(stmt.toString());
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO users "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?);");
+                stmt.setString(1, user.getUsername());
+                stmt.setString(2, user.getPassword());
+                stmt.setString(3, user.getFullname());
+                stmt.setDate(4, new java.sql.Date(user.getBirthday().getTime()));
+                stmt.setString(5, user.getAddress());
+                stmt.setString(6, user.getPhone());
+                stmt.setDate(7, new java.sql.Date(user.getExpirationDate().getTime()));
+                //System.out.println(stmt.toString());
+                stmt.executeUpdate();
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+                return false;
+            }
+            return true;
+        } else {
             return false;
         }
-        return true;
     }
 
     public static boolean saveAdmin(Admins admin) {
         initialize(); // Remove after complete
-        try {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO admins "
-                    + "VALUES (?, ?, ?, ?, ?);");
-            stmt.setString(1, admin.getUsername());
-            stmt.setString(2, admin.getPassword());
-            stmt.setString(3, admin.getFullname());
-            stmt.setInt(4, admin.getPrivilege());
-            stmt.setString(5, admin.getPhone());
-            //System.out.println(stmt.toString());
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO admins "
+                        + "VALUES (?, ?, ?, ?, ?);");
+                stmt.setString(1, admin.getUsername());
+                stmt.setString(2, admin.getPassword());
+                stmt.setString(3, admin.getFullname());
+                stmt.setInt(4, admin.getPrivilege());
+                stmt.setString(5, admin.getPhone());
+                //System.out.println(stmt.toString());
+                stmt.executeUpdate();
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+                return false;
+            }
+            return true;
+        } else {
             return false;
         }
-        return true;
     }
 
     public static boolean saveCategory(Categories category) {
         initialize(); // Remove after complete
-        try {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO categories (categoryName, description) "
-                    + "VALUES (?, ?);", Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, category.getCategoryName());
-            stmt.setString(2, category.getDescription());
-            //System.out.println(stmt.toString());
-            stmt.executeUpdate();
-            ResultSet key = stmt.getGeneratedKeys();
-            if (key.next()) {
-                category.setCategoryId(key.getInt(1));
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO categories (categoryName, description) "
+                        + "VALUES (?, ?);", Statement.RETURN_GENERATED_KEYS);
+                stmt.setString(1, category.getCategoryName());
+                stmt.setString(2, category.getDescription());
+                //System.out.println(stmt.toString());
+                stmt.executeUpdate();
+                ResultSet key = stmt.getGeneratedKeys();
+                if (key.next()) {
+                    category.setCategoryId(key.getInt(1));
+                }
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+                return false;
             }
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+            return true;
+        } else {
             return false;
         }
-        return true;
     }
 
     public static boolean saveBorrow(Borrows borrow) {
         initialize(); // Remove after complete
-        try {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO borrows (borrowDate, borrowUser, expirationDate) "
-                    + "VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-            stmt.setDate(1, new java.sql.Date(borrow.getBorrowDate().getTime()));
-            stmt.setString(2, borrow.getBorrowUser());
-            stmt.setDate(3, new java.sql.Date(borrow.getExpirationDate().getTime()));
-            //System.out.println(stmt.toString());
-            stmt.executeUpdate();
-            ResultSet key = stmt.getGeneratedKeys();
-            if (key.next()) {
-                borrow.setBorrowId(key.getInt(1));
-            } else {
-                System.out.println("Cannot get Key");
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO borrows (borrowDate, borrowUser, expirationDate) "
+                        + "VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+                stmt.setDate(1, new java.sql.Date(borrow.getBorrowDate().getTime()));
+                stmt.setString(2, borrow.getBorrowUser());
+                stmt.setDate(3, new java.sql.Date(borrow.getExpirationDate().getTime()));
+                //System.out.println(stmt.toString());
+                stmt.executeUpdate();
+                ResultSet key = stmt.getGeneratedKeys();
+                if (key.next()) {
+                    borrow.setBorrowId(key.getInt(1));
+                } else {
+                    System.out.println("Cannot get Key");
+                }
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+                return false;
             }
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+            return true;
+        } else {
             return false;
         }
-        return true;
     }
 
     public static boolean saveBorrowDetail(BorrowDetails detail) {
         initialize(); // Remove after complete
-        try {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO borrowdetails (borrowId, bookId, isReturn, returnDate)"
-                    + "VALUES (?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, detail.getBorrowId());
-            stmt.setInt(2, detail.getBookId());
-            stmt.setBoolean(3, detail.isIsReturn());
-            stmt.setDate(4, new java.sql.Date(detail.getReturnDate().getTime()));
-            stmt.executeUpdate();
-            ResultSet key = stmt.getGeneratedKeys();
-            if (key.next()) {
-                detail.setBorrowDetailId(key.getInt(1));
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO borrowdetails (borrowId, bookId)"
+                        + "VALUES (?, ?);", Statement.RETURN_GENERATED_KEYS);
+                stmt.setInt(1, detail.getBorrowId());
+                stmt.setInt(2, detail.getBookId());
+                stmt.executeUpdate();
+                ResultSet key = stmt.getGeneratedKeys();
+                if (key.next()) {
+                    detail.setBorrowDetailId(key.getInt(1));
+                }
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+                return false;
             }
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+            return true;
+        } else {
             return false;
         }
-        return true;
     }
-    
-    public static ArrayList<Books> findBookByName(String name){
+
+    public static boolean saveReturnBook(ReturnBooks rb) {
+        initialize(); // Remove after complete
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO returnbooks "
+                        + "VALUES (?, ?, ?);");
+                stmt.setInt(1, rb.getBorrowDetailId());
+                stmt.setDate(2, new java.sql.Date(rb.getReturnDate().getTime()));
+                stmt.setInt(3, rb.getPenalty());
+                //System.out.println(stmt);
+                stmt.executeUpdate();
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static ArrayList<Books> findBookByName(String name) {
         ArrayList<Books> list = new ArrayList<>();
         Books book;
         try {
             Statement stmt = conn.createStatement();
-            String query = "SELECT * FROM Books WHERE bookName LIKE '%" + name +"%';";
+            String query = "SELECT * FROM Books WHERE bookName LIKE '%" + name + "%';";
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 book = new Books(rs.getString("bookName"), rs.getString("author"),
-                    rs.getString("publishCom"), rs.getInt("categoryId"), rs.getString("shelf"), 
-                    rs.getInt("price"));
+                        rs.getString("publishCom"), rs.getInt("categoryId"), rs.getString("shelf"),
+                        rs.getInt("price"));
                 book.setBookId(rs.getInt("bookId"));
                 list.add(book);
             }
@@ -257,18 +327,18 @@ public class Database {
         }
         return list;
     }
-    
+
     public static ArrayList<Books> findBookByAuthor(String author) {
         ArrayList<Books> list = new ArrayList<>();
         Books book;
         try {
             Statement stmt = conn.createStatement();
-            String query = "SELECT * FROM Books WHERE author LIKE '%" + author +"%';";
+            String query = "SELECT * FROM Books WHERE author LIKE '%" + author + "%';";
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 book = new Books(rs.getString("bookName"), rs.getString("author"),
-                    rs.getString("publishCom"), rs.getInt("categoryId"), rs.getString("shelf"), 
-                    rs.getInt("price"));
+                        rs.getString("publishCom"), rs.getInt("categoryId"), rs.getString("shelf"),
+                        rs.getInt("price"));
                 book.setBookId(rs.getInt("bookId"));
                 list.add(book);
             }
@@ -279,23 +349,43 @@ public class Database {
         }
         return list;
     }
-    
+
     public static ArrayList<Books> findBookByCategory(String category) {
         ArrayList<Books> list = new ArrayList<>();
         Books book;
         try {
             Statement stmt = conn.createStatement();
-            String query = "SELECT Books.* from Books, Categories " +
-                    "WHERE Books.categoryId = categories.categoryId " +
-                    "AND categories.categoryName like '%" + category + "%';";
-            System.out.println(query);
+            String query = "SELECT Books.* from Books, Categories "
+                    + "WHERE Books.categoryId = categories.categoryId "
+                    + "AND categories.categoryName like '%" + category + "%';";
+//            System.out.println(query);
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 book = new Books(rs.getString("bookName"), rs.getString("author"),
-                    rs.getString("publishCom"), rs.getInt("categoryId"), rs.getString("shelf"), 
-                    rs.getInt("price"));
+                        rs.getString("publishCom"), rs.getInt("categoryId"), rs.getString("shelf"),
+                        rs.getInt("price"));
                 book.setBookId(rs.getInt("bookId"));
                 list.add(book);
+            }
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return list;
+    }
+
+    public static ArrayList<Categories> getAllCategories() {
+        ArrayList<Categories> list = new ArrayList<>();
+        try {
+            Statement stmt = conn.createStatement();
+            String query = "SELECT * FROM categories;";
+            ResultSet rs = stmt.executeQuery(query);
+            Categories cat;
+            while (rs.next()) {
+                cat = new Categories(rs.getString("categoryName"), rs.getString("description"));
+                cat.setCategoryId(rs.getInt("categoryId"));
+                list.add(cat);
             }
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
@@ -310,10 +400,17 @@ public class Database {
     }
 
     public static void main(String[] args) {
-        initialize();
-        ArrayList<Books> list = findBookByCategory("Lap");
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println(list.get(i).getBookName());
+        Admins admin = new Admins("lib", "lib", "Librarian", 0, "0123456789");
+        if (AdminsAuth.login("admin", "admin")) {
+            System.out.println("Login success");
+            if (admin.save()) {
+                System.out.println("Save Success");
+            } else {
+                System.out.println("Save Failed");
+            }
+        } else {
+            System.out.println("Login failed");
         }
+
     }
 }

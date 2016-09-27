@@ -14,7 +14,7 @@ import com.hk.database.Database;
 public class AdminsAuth {
     private static Admins admin = null;
     public static boolean login(String username, String password){
-        admin = Database.checkAdminLogin(username, password);
+        admin = Database.checkAdminLogin(username, Database.hashPassword(password));
         if (admin == null) {
             return false;
         }

@@ -14,7 +14,7 @@ import com.hk.database.Database;
 public class UsersAuth {
     private static Users user = null;
     public static boolean login(String username, String password){
-        user = Database.checkUserLogin(username, password);
+        user = Database.checkUserLogin(username, Database.hashPassword(password));
         if (user == null) {
             return false;
         }

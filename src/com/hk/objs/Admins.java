@@ -5,6 +5,8 @@
  */
 package com.hk.objs;
 
+import com.hk.database.Database;
+
 /**
  *
  * @author hoangkien
@@ -18,7 +20,7 @@ public class Admins {
 
     public Admins(String username, String password, String fullname, int privilege, String phone) {
         this.username = username;
-        this.password = password;
+        this.password = Database.hashPassword(password);
         this.fullname = fullname;
         this.privilege = privilege;
         this.phone = phone;
@@ -37,7 +39,7 @@ public class Admins {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = Database.hashPassword(password);
     }
 
     public String getFullname() {
@@ -64,8 +66,7 @@ public class Admins {
         this.phone = phone;
     }
     
-    public void save() {
-    
+    public boolean save() {
+        return Database.saveAdmin(this);
     }
-    
 }

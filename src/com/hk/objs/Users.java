@@ -24,7 +24,7 @@ public class Users {
     public Users(String username, String password, String fullName, 
             Date birthday, String address, String phone, Date expirationDate) {
         this.username = username;
-        this.password = password;
+        this.password = Database.hashPassword(password);
         this.fullname = fullName;
         this.birthday = birthday;
         this.address = address;
@@ -45,7 +45,7 @@ public class Users {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = Database.hashPassword(password);
     }
 
     public String getFullname() {
