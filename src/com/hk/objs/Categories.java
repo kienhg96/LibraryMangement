@@ -6,6 +6,7 @@
 package com.hk.objs;
 
 import com.hk.database.Database;
+import java.util.ArrayList;
 
 /**
  *
@@ -17,6 +18,7 @@ public class Categories {
     private String description;
 
     public Categories(String categoryName, String description) {
+        this.categoryId = -1;
         this.categoryName = categoryName;
         this.description = description;
     }
@@ -25,8 +27,14 @@ public class Categories {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public boolean setCategoryId(int categoryId) {
+        if (this.categoryId == -1) {
+            this.categoryId = categoryId;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public String getCategoryName() {
@@ -46,5 +54,11 @@ public class Categories {
     }
     public boolean save(){
         return Database.saveCategory(this);
+    }
+    public static ArrayList<Categories> getAllCategory(){
+        return Database.getAllCategories();
+    }
+    public boolean remove(){
+        return Database.removeCategory(this);
     }
 }

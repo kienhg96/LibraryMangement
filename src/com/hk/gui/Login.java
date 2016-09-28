@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package com.hk.gui;
+import com.hk.authenticate.AdminsAuth;
 import com.hk.authenticate.UsersAuth;
 import javax.swing.JOptionPane;
 
@@ -40,6 +41,7 @@ public class Login extends javax.swing.JFrame {
         pfPassword = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Login");
 
         jLabel1.setText("Username");
 
@@ -108,7 +110,7 @@ public class Login extends javax.swing.JFrame {
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnLogin)
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         pack();
@@ -123,7 +125,22 @@ public class Login extends javax.swing.JFrame {
         String password = String.valueOf(pfPassword.getPassword());
         if (this.rbReader.isSelected()) {
             if (UsersAuth.login(username, password)) {
-            JOptionPane.showMessageDialog(null, "Login as " + UsersAuth.getUser().getUsername());
+                JOptionPane.showMessageDialog(null, "Login as " + UsersAuth.getUser().getUsername());
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Login failed");
+            }
+        }
+        else {
+            if (AdminsAuth.login(username, password)) {
+                //JOptionPane.showMessageDialog(null, "Login as " + AdminsAuth.getAdmin().getUsername());
+                if (AdminsAuth.getAdmin().getPrivilege() == 0) {
+                    new LibrarianMain().setVisible(true);                    
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "Login as admin");
+                }
+                this.dispose();
             }
             else {
                 JOptionPane.showMessageDialog(null, "Login failed");
@@ -163,6 +180,7 @@ public class Login extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Login().setVisible(true);
+             
             }
         });
     }

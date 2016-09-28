@@ -21,23 +21,40 @@ public class Books {
     private int categoryId;
     private String shelf;
     private int price;
+    private int publishYear;
 
+    public int getPublishYear() {
+        return publishYear;
+    }
+
+    public void setPublishYear(int publishYear) {
+        this.publishYear = publishYear;
+    }
+    
     public Books(String bookName, String author, String publishCom,
-            int categoryId, String shelf, int price) {
+            int categoryId, String shelf, int price, int publishYear) {
+        this.bookId = -1; // -1 by Default, set for new book
         this.bookName = bookName;
         this.author = author;
         this.publishCom = publishCom;
         this.categoryId = categoryId;
         this.shelf = shelf;
         this.price = price;
+        this.publishYear = publishYear;
     }
 
     public int getBookId() {
         return bookId;
     }
 
-    public void setBookId(int bookId) {
-        this.bookId = bookId;
+    public boolean setBookId(int bookId) {
+        if (this.bookId == -1) {
+            this.bookId = bookId;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public String getBookName() {

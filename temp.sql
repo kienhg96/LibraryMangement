@@ -2,7 +2,7 @@ insert into users values('nhai', '4321', 'Nguyen Nhai', str_to_date('29-08-1996'
 'Hanoi', '0987654321', str_to_date('10-8-2020', '%d-%m-%Y'));
 
 select * from admins;
-
+select * from books;
 select * from users;
 
 select * from categories;
@@ -34,8 +34,8 @@ VALUES ('user1', '1111', 'Nguoi di duong', '1996-05-08', 'bac giang', '012345678
 
 delete from users where username='user1';
 
-Alter table borrowdetails
-	Add penalty integer;
+Alter table books
+	Add publishYear INTEGER;
     
 select * from  borrowdetails;
 
@@ -72,3 +72,6 @@ where username='admin';
 
 DELETE FROM admins
 where username='lib';
+
+select * from books where bookId = 1 and bookName = "abc";
+insert into books values (1, "abc", "KH", "Kh company", 1, "Ke 2", 100000);

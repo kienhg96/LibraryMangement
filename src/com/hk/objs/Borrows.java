@@ -13,19 +13,30 @@ import java.util.Date;
  * @author hoangkien
  */
 public class Borrows {
+
     private int borrowId;
     private Date borrowDate;
     private String borrowUser;
     private Date expirationDate;
+    private int deposit;
 
+    public int getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(int deposit) {
+        this.deposit = deposit;
+    }
+    
     public int getBorrowId() {
         return borrowId;
     }
 
-    public Borrows(Date borrowDate, String borrowUser, Date expirationDate) {
+    public Borrows(Date borrowDate, String borrowUser, Date expirationDate, int deposit) {
         this.borrowDate = borrowDate;
         this.borrowUser = borrowUser;
         this.expirationDate = expirationDate;
+        this.deposit = deposit;
     }
 
     public void setBorrowId(int borrowId) {
@@ -55,9 +66,9 @@ public class Borrows {
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = expirationDate;
     }
-    
+
     public boolean save() {
         return Database.saveBorrow(this);
     }
-    
+
 }

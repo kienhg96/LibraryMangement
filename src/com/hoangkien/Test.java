@@ -5,31 +5,56 @@
  */
 package com.hoangkien;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  *
  * @author hoangkien
  */
 public class Test {
+
+//    public static void main(String[] args) {
+//        JTextField xField = new JTextField(5);
+//        JTextField yField = new JTextField(5);
+//        //xField.setPreferredSize(new Dimension(100, 100));
+//        JPanel myPanel = new JPanel();
+//        myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
+//
+//        JPanel p1 = new JPanel();
+//        JPanel p2 = new JPanel();
+//        p1.add(new JLabel("x:"));
+//        p1.add(xField);
+//        p2.add(new JLabel("y:"));
+//        p2.add(yField);
+//        
+//        myPanel.add(p1);
+//        myPanel.add(p2);
+//        
+//        int result = JOptionPane.showConfirmDialog(null, myPanel,
+//                "Please Enter X and Y Values", JOptionPane.OK_CANCEL_OPTION);
+//        System.out.println("Done");
+//        if (result == JOptionPane.OK_OPTION) {
+//            System.out.println("x value: " + xField.getText());
+//            System.out.println("y value: " + yField.getText());
+//        }
+//    }
     public static void main(String[] args) {
-        try {
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            digest.update("admin".getBytes());
-            byte[] bytes = digest.digest();
-            StringBuilder sb = new StringBuilder();
-            for(int i=0; i< bytes.length ;i++)
-            {
-                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-            }
-            System.out.println(sb.toString());
-            
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String patternString = ".*abc.*";
+        Pattern pattern = Pattern.compile(patternString);
+        String str = "12abac8";
+        System.out.println(pattern.matcher(str).matches());
     }
 }
