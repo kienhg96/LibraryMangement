@@ -165,6 +165,25 @@ public class Database {
             return false;
         }
     }
+    
+    public static boolean removeBook(Books book) {
+        initialize(); // Remove after complete
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                PreparedStatement stmt = conn.prepareStatement("DELETE FROM books WHERE bookId=?");
+                stmt.setInt(1, book.getBookId());
+                stmt.executeUpdate();
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public static boolean saveUser(Users user) {
         initialize(); // Remove after complete
@@ -441,6 +460,30 @@ public class Database {
         return list;
     }
 
+    public static ArrayList<Books> getAllBooks() {
+        initialize(); // Remove after complete
+        ArrayList<Books> list = new ArrayList<>();
+        Books book;
+        try {
+            Statement stmt = conn.createStatement();
+            String query = "SELECT * FROM Books";
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                book = new Books(rs.getString("bookName"), rs.getString("author"),
+                        rs.getString("publishCom"), rs.getInt("categoryId"), 
+                        rs.getString("shelf"), rs.getInt("price"), 
+                        rs.getInt("publishYear"));
+                book.setBookId(rs.getInt("bookId"));
+                list.add(book);
+            }
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return list;
+    }
+
     public static ArrayList<Categories> getAllCategories() {
         initialize(); // Remove after complete
         ArrayList<Categories> list = new ArrayList<>();
@@ -487,14 +530,9 @@ public class Database {
     }
 
     public static void main(String[] args) {
-        if (AdminsAuth.login("lib", "lib")) {
-            System.out.println("Logined");
-            Books book = findBookById(5);
-            book.setPublishYear(2013);
-            book.save();
-        } else {
-            System.out.println("Login failed");
+        ArrayList<Books> list = getAllBooks();
+        for (Books item: list) {
+            System.out.println(item.getBookName());
         }
-
     }
 }

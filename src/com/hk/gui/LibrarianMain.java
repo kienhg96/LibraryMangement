@@ -29,9 +29,10 @@ public class LibrarianMain extends javax.swing.JFrame {
 
         btnBookMan = new javax.swing.JButton();
         btnCategoryMan = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnManageReader = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Librarian");
 
         btnBookMan.setText("Manage Book");
         btnBookMan.addActionListener(new java.awt.event.ActionListener() {
@@ -47,10 +48,10 @@ public class LibrarianMain extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("jButton3");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnManageReader.setText("Manage Reader");
+        btnManageReader.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnManageReaderActionPerformed(evt);
             }
         });
 
@@ -63,7 +64,7 @@ public class LibrarianMain extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnBookMan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnCategoryMan, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnManageReader, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(112, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -74,19 +75,19 @@ public class LibrarianMain extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnCategoryMan)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
+                .addComponent(btnManageReader)
                 .addContainerGap(208, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void btnManageReaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageReaderActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_btnManageReaderActionPerformed
 
     private void btnBookManActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBookManActionPerformed
-        // TODO add your handling code here:
+        new ManageBook().setVisible(true);
     }//GEN-LAST:event_btnBookManActionPerformed
 
     private void btnCategoryManActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryManActionPerformed
@@ -132,6 +133,6 @@ public class LibrarianMain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBookMan;
     private javax.swing.JButton btnCategoryMan;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton btnManageReader;
     // End of variables declaration//GEN-END:variables
 }

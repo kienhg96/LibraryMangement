@@ -125,10 +125,10 @@ public class Login extends javax.swing.JFrame {
         String password = String.valueOf(pfPassword.getPassword());
         if (this.rbReader.isSelected()) {
             if (UsersAuth.login(username, password)) {
-                JOptionPane.showMessageDialog(null, "Login as " + UsersAuth.getUser().getUsername());
+                JOptionPane.showMessageDialog(this, "Login as " + UsersAuth.getUser().getUsername());
             }
             else {
-                JOptionPane.showMessageDialog(null, "Login failed");
+                JOptionPane.showMessageDialog(this, "Login failed");
             }
         }
         else {
@@ -138,12 +138,12 @@ public class Login extends javax.swing.JFrame {
                     new LibrarianMain().setVisible(true);                    
                 }
                 else {
-                    JOptionPane.showMessageDialog(null, "Login as admin");
+                    JOptionPane.showMessageDialog(this, "Login as admin");
                 }
                 this.dispose();
             }
             else {
-                JOptionPane.showMessageDialog(null, "Login failed");
+                JOptionPane.showMessageDialog(this, "Login failed");
             }
         }
         

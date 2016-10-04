@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -51,10 +52,20 @@ public class Test {
 //            System.out.println("y value: " + yField.getText());
 //        }
 //    }
+//    public static void main(String[] args) {
+//        String patternString = ".*abc.*";
+//        Pattern pattern = Pattern.compile(patternString);
+//        String str = "12abac8";
+//        System.out.println(pattern.matcher(str).matches());
+//    }
     public static void main(String[] args) {
-        String patternString = ".*abc.*";
-        Pattern pattern = Pattern.compile(patternString);
-        String str = "12abac8";
-        System.out.println(pattern.matcher(str).matches());
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i = 0; i < 10; i++) {
+            list.add(new Integer(i));
+        }
+        Collections.shuffle(list);
+        for (int i = 0; i < 3; i++) {
+            System.out.println(list.get(i));
+        }
     }
 }

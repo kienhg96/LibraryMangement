@@ -56,6 +56,7 @@ public class ManageCategory extends javax.swing.JFrame {
         btnFilter = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Manage Category");
 
         tbCategories.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -155,11 +156,12 @@ public class ManageCategory extends javax.swing.JFrame {
 
     private void btnAddCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCategoryActionPerformed
         DialogCategory dialog = new DialogCategory(this, rootPaneCheckingEnabled);
+        dialog.setTitle("Add Category");
         dialog.setVisible(true);
         if (dialog.isModify()) {
             Categories category = new Categories(dialog.getCategoryName(), dialog.getDescription());
             if (category.save()) {
-                System.out.println("Save success");
+                //System.out.println("Save success");
                 model.addRow(new Object[]{category.getCategoryId(),
                     category.getCategoryName(), category.getDescription()});
                 this.categoryList.add(category);
@@ -182,21 +184,25 @@ public class ManageCategory extends javax.swing.JFrame {
             dialog.setCategoryId(categoryId);
             dialog.setCategoryName(categoryName);
             dialog.setDescription(description);
+            dialog.setTitle("Edit category");
             dialog.setVisible(true);
             if (dialog.isModify()) {
                 categoryName = dialog.getCategoryName();
                 description = dialog.getDescription();
                 Categories category = new Categories(categoryName, description);
                 category.setCategoryId(categoryId);
-                category.save();
-                model.setValueAt(categoryName, selectedRow, 1);
-                model.setValueAt(description, selectedRow, 2);
-                for (Categories item : categoryList) {
-                    if (item.getCategoryId() == categoryId) {
-                        item.setCategoryName(categoryName);
-                        item.setDescription(description);
-                        break;
+                if (category.save()) {
+                    model.setValueAt(categoryName, selectedRow, 1);
+                    model.setValueAt(description, selectedRow, 2);
+                    for (Categories item : categoryList) {
+                        if (item.getCategoryId() == categoryId) {
+                            item.setCategoryName(categoryName);
+                            item.setDescription(description);
+                            break;
+                        }
                     }
+                } else {
+                    JOptionPane.showMessageDialog(null, "You do not have permission to edit categories");
                 }
             }
         } else {
@@ -209,10 +215,8 @@ public class ManageCategory extends javax.swing.JFrame {
         model.getDataVector().removeAllElements();
         model.fireTableDataChanged();
         String str = this.txtFilter.getText();
-        Pattern pattern = Pattern.compile(".*" + str + ".*");
-        Categories item = null;
-        for (int i = 0; i < this.categoryList.size(); i++) {
-            item = this.categoryList.get(i);
+        Pattern pattern = Pattern.compile("(?i).*" + str + ".*");
+        for (Categories item : this.categoryList) {
             if (pattern.matcher(item.getCategoryName()).matches()) {
                 model.addRow(new Object[]{item.getCategoryId(), item.getCategoryName(), item.getDescription()});
             }
@@ -220,8 +224,26 @@ public class ManageCategory extends javax.swing.JFrame {
     }//GEN-LAST:event_btnFilterActionPerformed
 
     private void btnRemoveCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveCategoryActionPerformed
-        JOptionPane.showConfirmDialog(null, "Are you sure want to remove it");
-        // Continue here !!!
+        int selectedRow = this.tbCategories.getSelectedRow();
+        if (selectedRow != -1) {
+            int result = JOptionPane.showConfirmDialog(this, "Are you sure want to remove it");
+            if (result == JOptionPane.YES_OPTION) {
+                for (int i = 0; i < this.categoryList.size(); i++) {
+                    if (categoryList.get(i).getCategoryId() == (int) this.tbCategories.getValueAt(selectedRow, 0)) {
+                        if (categoryList.get(i).remove()) {
+                            this.model.removeRow(selectedRow);
+                            this.categoryList.remove(i);
+                        } else {
+                            JOptionPane.showMessageDialog(this, "You do not have permission to Remove this category");
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "You must choose a row");
+        }
     }//GEN-LAST:event_btnRemoveCategoryActionPerformed
 
     /**

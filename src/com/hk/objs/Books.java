@@ -108,7 +108,11 @@ public class Books {
     public boolean save() {
         return Database.saveBook(this);
     }
-
+    
+    public boolean remove() {
+        return Database.removeBook(this);
+    }
+    
     public static ArrayList<Books> findBookByName(String name) {
         return Database.findBookByName(name);
     }
@@ -119,5 +123,8 @@ public class Books {
 
     public static ArrayList<Books> findBookByCategory(String category) {
         return Database.findBookByCategory(category);
+    }
+    public static ArrayList<Books> getAllBooks(){
+        return Database.getAllBooks();
     }
 }
