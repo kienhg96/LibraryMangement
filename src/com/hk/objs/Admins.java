@@ -15,17 +15,26 @@ public class Admins {
     private String username;
     private String password;
     private String fullname;
-    private int privilege;
     private String phone;
 
-    public Admins(String username, String password, String fullname, int privilege, String phone) {
+    public Admins(String username) {
+        this.username = username;
+        this.password = null;
+        this.fullname = null;
+        this.phone = null;
+    }
+    
+    public Admins(String username, String password, String fullname, String phone) {
         this.username = username;
         this.password = Database.hashPassword(password);
         this.fullname = fullname;
-        this.privilege = privilege;
         this.phone = phone;
     }
 
+    public void setRawPassword(String raw) {
+        this.password = raw;
+    }
+    
     public String getUsername() {
         return username;
     }
@@ -37,7 +46,7 @@ public class Admins {
     public String getPassword() {
         return password;
     }
-
+    
     public void setPassword(String password) {
         this.password = Database.hashPassword(password);
     }
@@ -48,14 +57,6 @@ public class Admins {
 
     public void setFullname(String fullname) {
         this.fullname = fullname;
-    }
-
-    public int getPrivilege() {
-        return privilege;
-    }
-
-    public void setPrivilege(int privilege) {
-        this.privilege = privilege;
     }
 
     public String getPhone() {

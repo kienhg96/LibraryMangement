@@ -226,7 +226,8 @@ public class ManageCategory extends javax.swing.JFrame {
     private void btnRemoveCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveCategoryActionPerformed
         int selectedRow = this.tbCategories.getSelectedRow();
         if (selectedRow != -1) {
-            int result = JOptionPane.showConfirmDialog(this, "Are you sure want to remove it");
+            int result = JOptionPane.showConfirmDialog(this, "Are you sure want to remove " + 
+                    this.tbCategories.getValueAt(selectedRow, 1));
             if (result == JOptionPane.YES_OPTION) {
                 for (int i = 0; i < this.categoryList.size(); i++) {
                     if (categoryList.get(i).getCategoryId() == (int) this.tbCategories.getValueAt(selectedRow, 0)) {

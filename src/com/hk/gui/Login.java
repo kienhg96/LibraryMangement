@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package com.hk.gui;
+
 import com.hk.authenticate.AdminsAuth;
 import com.hk.authenticate.UsersAuth;
 import javax.swing.JOptionPane;
@@ -126,27 +127,19 @@ public class Login extends javax.swing.JFrame {
         if (this.rbReader.isSelected()) {
             if (UsersAuth.login(username, password)) {
                 JOptionPane.showMessageDialog(this, "Login as " + UsersAuth.getUser().getUsername());
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(this, "Login failed");
             }
-        }
-        else {
+        } else {
             if (AdminsAuth.login(username, password)) {
                 //JOptionPane.showMessageDialog(null, "Login as " + AdminsAuth.getAdmin().getUsername());
-                if (AdminsAuth.getAdmin().getPrivilege() == 0) {
-                    new LibrarianMain().setVisible(true);                    
-                }
-                else {
-                    JOptionPane.showMessageDialog(this, "Login as admin");
-                }
+                new LibrarianMain().setVisible(true);
                 this.dispose();
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(this, "Login failed");
             }
         }
-        
+
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**
@@ -180,7 +173,7 @@ public class Login extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Login().setVisible(true);
-             
+
             }
         });
     }

@@ -6,12 +6,14 @@
 package com.hk.gui;
 
 import com.hk.database.Database;
+import com.hk.objs.Users;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JOptionPane;
@@ -23,6 +25,7 @@ import javax.swing.JOptionPane;
 public class DialogUser extends javax.swing.JDialog {
 
     private boolean modify = false;
+    private ArrayList<Users> listUser = null;
 
     /**
      * Creates new form DialogUser
@@ -100,6 +103,7 @@ public class DialogUser extends javax.swing.JDialog {
             public void actionPerformed(ActionEvent e) {
                 if (((String) cbBirthMonth.getSelectedItem()).equals("February")) {
                     int numberOfDate;
+                    int currentDate = (int)cbBirthDate.getSelectedItem();
                     if ((int) cbBirthYear.getSelectedItem() % 4 == 0) {
                         numberOfDate = 29;
                     } else {
@@ -109,6 +113,17 @@ public class DialogUser extends javax.swing.JDialog {
                     for (int i = 1; i <= numberOfDate; i++) {
                         cbBirthDate.addItem(i);
                     }
+                    if (currentDate <= 28) {
+                        cbBirthDate.setSelectedIndex(currentDate - 1);
+                    }
+                    else {
+                        if ((int) cbBirthYear.getSelectedItem() % 4 == 0) {
+                            cbBirthDate.setSelectedIndex(28);
+                        }
+                        else {
+                            cbBirthDate.setSelectedIndex(27);
+                        }
+                    }
                 }
             }
         });
@@ -117,6 +132,7 @@ public class DialogUser extends javax.swing.JDialog {
             public void actionPerformed(ActionEvent e) {
                 if (((String) cbExMonth.getSelectedItem()).equals("February")) {
                     int numberOfDate;
+                    int currentDate = (int)cbExDate.getSelectedItem();
                     if ((int) cbExYear.getSelectedItem() % 4 == 0) {
                         numberOfDate = 29;
                     } else {
@@ -125,6 +141,17 @@ public class DialogUser extends javax.swing.JDialog {
                     cbExDate.removeAllItems();
                     for (int i = 1; i <= numberOfDate; i++) {
                         cbExDate.addItem(i);
+                    }
+                    if (currentDate <= 28) {
+                        cbExDate.setSelectedIndex(currentDate - 1);
+                    }
+                    else {
+                        if ((int) cbExYear.getSelectedItem() % 4 == 0) {
+                            cbExDate.setSelectedIndex(28);
+                        }
+                        else {
+                            cbExDate.setSelectedIndex(27);
+                        }
                     }
                 }
             }
@@ -240,12 +267,16 @@ public class DialogUser extends javax.swing.JDialog {
         }
         return Database.newDate(day, monthNum, year);
     }
-    
+
     public void disableUsername() {
         this.txtUsername.setEnabled(false);
         this.txtUsername.setDisabledTextColor(Color.gray);
     }
-    
+
+    public void setUserList(ArrayList<Users> list) {
+        this.listUser = list;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -415,6 +446,7 @@ public class DialogUser extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
+
         if (this.txtUsername.getText().equals("")) {
             JOptionPane.showMessageDialog(this, "Username field cannot empty");
         } else if (String.valueOf(this.txtPassword.getPassword()).equals("")) {
@@ -426,8 +458,24 @@ public class DialogUser extends javax.swing.JDialog {
         } else if (this.txtPhone.getText().equals("")) {
             JOptionPane.showMessageDialog(this, "Phone field cannot empty");
         } else {
-            this.modify = true;
-            this.dispose();
+            if (this.listUser != null) {
+                String username = this.txtUsername.getText();
+                boolean flag = true;
+                for (Users user : listUser) {
+                    if (user.getUsername().equals(username)) {
+                        JOptionPane.showMessageDialog(this, "Username exists");
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    this.modify = true;
+                    this.dispose();
+                }
+            } else {
+                this.modify = true;
+                this.dispose();
+            }
         }
     }//GEN-LAST:event_btnOKActionPerformed
 

@@ -94,6 +94,11 @@ public class ManageUser extends javax.swing.JFrame {
         });
 
         btnDeleteUser.setText("Delete User");
+        btnDeleteUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteUserActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Filter by Username");
 
@@ -103,7 +108,7 @@ public class ManageUser extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 517, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 725, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -129,8 +134,8 @@ public class ManageUser extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 110, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -138,6 +143,7 @@ public class ManageUser extends javax.swing.JFrame {
 
     private void btnAddUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddUserActionPerformed
         DialogUser dialog = new DialogUser(this, true);
+        dialog.setUserList(listUser);
         dialog.setVisible(true);
         if (dialog.isModify()) {
             String username = dialog.getUsername();
@@ -205,16 +211,36 @@ public class ManageUser extends javax.swing.JFrame {
                 user.setPhone(phone);
                 user.setExpirationDate(expirationDate);
                 if (user.save()) {
-                    // On save success
-                }
-                else {
-                    // On failed
+                    this.model.setValueAt(fullname, selectedRow, 1);
+                    this.model.setValueAt(df.format(birthday), selectedRow, 2);
+                    this.model.setValueAt(address, selectedRow, 3);
+                    this.model.setValueAt(phone, selectedRow, 4);
+                    this.model.setValueAt(df.format(expirationDate), selectedRow, 5);
+                } else {
+                    JOptionPane.showMessageDialog(this, "You do not have permission to save user");
                 }
             }
         } else {
             JOptionPane.showMessageDialog(this, "You must choose one user");
         }
     }//GEN-LAST:event_btnEditUserActionPerformed
+
+    private void btnDeleteUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteUserActionPerformed
+        int selectedRow = this.tbUser.getSelectedRow();
+        String username = (String) this.tbUser.getValueAt(selectedRow, 0);
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure want to remove "
+                + this.tbUser.getValueAt(selectedRow, 0));
+        if (result == JOptionPane.YES_OPTION) {
+            for (Users user : this.listUser) {
+                if (user.getUsername().equals(username)) {
+                    if (user.delete()) {
+                        this.model.removeRow(selectedRow);
+                    }
+                    break;
+                }
+            }
+        }
+    }//GEN-LAST:event_btnDeleteUserActionPerformed
 
     /**
      * @param args the command line arguments

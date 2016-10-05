@@ -6,6 +6,7 @@
 package com.hk.database;
 
 import com.hk.authenticate.AdminsAuth;
+import com.hk.authenticate.UsersAuth;
 import com.hk.objs.Admins;
 import com.hk.objs.Books;
 import com.hk.objs.BorrowDetails;
@@ -83,7 +84,14 @@ public class Database {
                 String address = result.getString("address");
                 String phone = result.getString("phone");
                 Date expirationDate = result.getDate("expirationDate");
-                user = new Users(username, password, fullname, birthday, address, phone, expirationDate);
+                //user = new Users(username, password, fullname, birthday, address, phone, expirationDate);
+                user = new Users(username);
+                user.setRawPassword(password);
+                user.setFullname(fullname);
+                user.setBirthday(birthday);
+                user.setAddress(address);
+                user.setPhone(phone);
+                user.setExpirationDate(expirationDate);
             }
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
@@ -106,9 +114,12 @@ public class Database {
             ResultSet result = stmt.executeQuery();
             if (result.next()) {
                 String fullname = result.getString("fullname");
-                int privilege = result.getInt("privilege");
                 String phone = result.getString("phone");
-                admin = new Admins(username, password, fullname, privilege, phone);
+                //admin = new Admins(username, password, fullname, privilege, phone);
+                admin = new Admins(username);
+                admin.setRawPassword(password);
+                admin.setFullname(fullname);
+                admin.setPhone(phone);
             }
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
@@ -220,24 +231,44 @@ public class Database {
             return false;
         }
     }
+    
+    public static boolean deleteUser(Users user) {
+        initialize(); // remove after complete
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "DELETE FROM Users WHERE username=?");
+                stmt.setString(1, user.getUsername());
+                stmt.executeUpdate();
+            }
+            catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+                return false;
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     public static boolean saveAdmin(Admins admin) {
         initialize(); // Remove after complete
-        if (AdminsAuth.getAdmin() != null && AdminsAuth.getAdmin().getPrivilege() == 1) {
+        if (AdminsAuth.getAdmin() != null) {
             try {
                 PreparedStatement stmt = conn.prepareStatement(
                         "INSERT INTO admins "
-                        + "VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
-                        + "password=?, fullname=?, privilege=?, phone=?;");
+                        + "VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
+                        + "password=?, fullname=?,  phone=?;");
                 stmt.setString(1, admin.getUsername());
                 stmt.setString(2, admin.getPassword());
                 stmt.setString(3, admin.getFullname());
-                stmt.setInt(4, admin.getPrivilege());
-                stmt.setString(5, admin.getPhone());
-                stmt.setString(6, admin.getPassword());
-                stmt.setString(7, admin.getFullname());
-                stmt.setInt(8, admin.getPrivilege());
-                stmt.setString(9, admin.getPhone());
+                stmt.setString(4, admin.getPhone());
+                stmt.setString(5, admin.getPassword());
+                stmt.setString(6, admin.getFullname());
+                stmt.setString(7, admin.getPhone());
                 //System.out.println(stmt.toString());
                 stmt.executeUpdate();
             } catch (SQLException ex) {
@@ -412,7 +443,6 @@ public class Database {
             String query = "SELECT Books.*, Categories.categoryName, Categories.description "
                     + "FROM Books, Categories WHERE Books.categoryId = Categories.categoryId "
                     + "and bookName LIKE '%" + name + "%'";
-            //System.out.println(query);
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 book = new Books();
@@ -573,10 +603,13 @@ public class Database {
                 ResultSet rs = stmt.executeQuery(query);
                 Users user;
                 while (rs.next()) {
-                    user = new Users(rs.getString("username"), rs.getString("password"),
-                            rs.getString("fullname"), rs.getDate("birthday"),
-                            rs.getString("address"), rs.getString("phone"),
-                            rs.getDate("expirationDate"));
+                    user = new Users(rs.getString("username"));
+                    user.setRawPassword(rs.getString("password"));
+                    user.setFullname(rs.getString("fullname"));
+                    user.setBirthday(rs.getDate("birthday"));
+                    user.setAddress(rs.getString("address"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setExpirationDate(rs.getDate("expirationDate"));
                     list.add(user);
                 }
             } catch (SQLException ex) {
@@ -619,12 +652,12 @@ public class Database {
 
     public static void main(String[] args) {
         AdminsAuth.login("admin", "admin");
-        ArrayList<Books> list = getAllBooks();
-        for (Books book : list) {
-            System.out.println(book.getBookName() + " " + 
-                    book.getCategory().getCategoryName() + " " + 
-                    book.getCategory().getDescription());
+        Users user = new Users("hk3");
+        if (deleteUser(user)){
+            System.out.println("Success");
         }
-        System.out.println(list.size());
+        else {
+            System.out.println("Failed");
+        }
     }
 }

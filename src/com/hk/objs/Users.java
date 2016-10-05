@@ -22,6 +22,16 @@ public class Users {
     private String phone;
     private Date expirationDate;
 
+    public Users(String username) {
+        this.username = username;
+        this.password = null;
+        this.fullname = null;
+        this.birthday = null;
+        this.address = null;
+        this.phone = null;
+        this.expirationDate = null;
+    }
+    
     public Users(String username, String password, String fullName, 
             Date birthday, String address, String phone, Date expirationDate) {
         this.username = username;
@@ -33,6 +43,10 @@ public class Users {
         this.expirationDate = expirationDate;
     }
 
+    public void setRawPassword(String raw){
+        this.password = raw;
+    }
+    
     public String getUsername() {
         return username;
     }
@@ -91,6 +105,10 @@ public class Users {
     
     public boolean save() {
         return Database.saveUser(this);
+    }
+    
+    public boolean delete() {
+        return Database.deleteUser(this);
     }
     
     public static ArrayList<Users> getAllUser() {

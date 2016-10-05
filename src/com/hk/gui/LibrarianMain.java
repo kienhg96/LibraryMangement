@@ -83,7 +83,7 @@ public class LibrarianMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnManageReaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageReaderActionPerformed
-        // TODO add your handling code here:
+        new ManageUser().setVisible(true);
     }//GEN-LAST:event_btnManageReaderActionPerformed
 
     private void btnBookManActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBookManActionPerformed
