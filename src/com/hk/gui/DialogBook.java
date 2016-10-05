@@ -58,13 +58,13 @@ public class DialogBook extends javax.swing.JDialog {
         return (int) this.spNumberBook.getValue();
     }
 
-    public void setValues(int bookId, String bookName, String author, int catId,
+    public void setValues(int bookId, String bookName, String author, Categories category,
             String publishCom, String shelf, int price, int publishYear) {
         this.txtBookId.setText(String.valueOf(bookId));
         this.txtBookName.setText(bookName);
         this.txtAuthor.setText(author);
         for (int i = 0; i < this.categoryList.size(); i++) {
-            if (this.categoryList.get(i).getCategoryId() == catId) {
+            if (this.categoryList.get(i).getCategoryId() == category.getCategoryId()) {
                 this.cbCategory.setSelectedIndex(i);
             }
         }
@@ -86,8 +86,9 @@ public class DialogBook extends javax.swing.JDialog {
         return this.txtAuthor.getText();
     }
 
-    public int getCategoryId() {
-        return this.categoryList.get(this.cbCategory.getSelectedIndex()).getCategoryId();
+    public Categories getCategory() {
+        //return this.categoryList.get(this.cbCategory.getSelectedIndex()).getCategoryId();
+        return this.categoryList.get(this.cbCategory.getSelectedIndex());
     }
 
     public String getPublishCom() {

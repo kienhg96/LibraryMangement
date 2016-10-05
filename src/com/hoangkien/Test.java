@@ -5,12 +5,18 @@
  */
 package com.hoangkien;
 
+import com.hk.authenticate.AdminsAuth;
+import com.hk.database.Database;
+import com.hk.objs.Users;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -20,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.text.DateFormatSymbols ;
 
 /**
  *
@@ -58,14 +65,12 @@ public class Test {
 //        String str = "12abac8";
 //        System.out.println(pattern.matcher(str).matches());
 //    }
+ 
+    public String getMonth(int month) {
+        return new DateFormatSymbols().getMonths()[month - 1];
+    }
+
     public static void main(String[] args) {
-        ArrayList<Integer> list = new ArrayList<Integer>();
-        for (int i = 0; i < 10; i++) {
-            list.add(new Integer(i));
-        }
-        Collections.shuffle(list);
-        for (int i = 0; i < 3; i++) {
-            System.out.println(list.get(i));
-        }
+        System.out.println(new Test().getMonth(1));
     }
 }

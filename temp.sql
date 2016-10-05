@@ -10,7 +10,11 @@ select * from categories;
 select * from borrows;
 
 select * from borrowdetails;
-
+delete from borrowdetails where borrowdetailid=4;
+select * from returnBooks;
+delete from returnBooks where borrowDetailId = 4;
+select * from borrows;
+delete from borrows where borrowId = 7;
 insert into borrows(borrowDate, borrowUser, expirationDate) 
 	values (str_to_date('25-09-2016', '%d-%m-%Y'), 'hk', str_to_date('25-09-2017', '%d-%m-%Y'));
 
@@ -32,10 +36,10 @@ DELETE FROM borrows WHERE borrowUser = 'hk';
 INSERT INTO users 
 VALUES ('user1', '1111', 'Nguoi di duong', '1996-05-08', 'bac giang', '0123456789', '2019-11-30');
 
-delete from users where username='user1';
-
-Alter table books
-	Add publishYear INTEGER;
+delete from users where username='hk';
+select * from users;
+Alter table borrows
+	Add deposit INTEGER;
     
 select * from  borrowdetails;
 
@@ -75,3 +79,12 @@ where username='lib';
 
 select * from books where bookId = 1 and bookName = "abc";
 insert into books values (1, "abc", "KH", "Kh company", 1, "Ke 2", 100000);
+select * from users;
+
+SELECT Books.*, Categories.categoryName, Categories.description 
+from Books, categories
+WHERE Books.categoryId = categories.categoryId;
+
+SELECT Books.*, Categories.categoryName, Categories.description 
+FROM Books WHERE Books.categoryId = Categories.categoryId 
+and Books.bookName LIKE '%A%';

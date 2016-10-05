@@ -21,31 +21,24 @@ import javax.swing.table.TableColumnModel;
 public class ManageBook extends javax.swing.JFrame {
 
     private ArrayList<Books> listBook;
-    private ArrayList<Categories> listCategory;
     private DefaultTableModel model;
 
     /**
      * Creates new form ManageBook
      */
     public ManageBook() {
+        AdminsAuth.login("admin", "admin");
         initComponents();
         TableColumnModel colModel = this.tbBooks.getColumnModel();
         colModel.getColumn(0).setPreferredWidth(70);
         colModel.getColumn(1).setPreferredWidth(160);
         model = (DefaultTableModel) this.tbBooks.getModel();
         listBook = Books.getAllBooks();
-        listCategory = Categories.getAllCategory();
         //System.out.println(this.listBook.size());
-        String cat = null;
         for (Books bookItem : listBook) {
-            for (Categories catItem : listCategory) {
-                if (bookItem.getCategoryId() == catItem.getCategoryId()) {
-                    cat = catItem.getCategoryName();
-                    break;
-                }
-            }
             model.addRow(new Object[]{bookItem.getBookId(),
-                bookItem.getBookName(), bookItem.getAuthor(), cat,
+                bookItem.getBookName(), bookItem.getAuthor(), 
+                bookItem.getCategory().getCategoryName(),
                 bookItem.getPublishCom(), bookItem.getShelf(),
                 bookItem.getPrice(), bookItem.getPublishYear()});
         }
@@ -111,7 +104,7 @@ public class ManageBook extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Filter");
+        jLabel1.setText("Filter by Book name");
 
         btnFilter.setText("Filter");
         btnFilter.addActionListener(new java.awt.event.ActionListener() {
@@ -127,19 +120,19 @@ public class ManageBook extends javax.swing.JFrame {
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 784, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnAddBook)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnEditBook)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDeleteBook))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnFilter)))
+                        .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnAddBook, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addComponent(btnEditBook, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnDeleteBook)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -155,8 +148,8 @@ public class ManageBook extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnFilter))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE))
         );
 
         pack();
@@ -171,7 +164,7 @@ public class ManageBook extends javax.swing.JFrame {
             int numberOfBook = dialog.getNumberOfBook();
             String bookName = dialog.getBookName();
             String author = dialog.getAuthor();
-            int categoryId = dialog.getCategoryId();
+            Categories categoryId = dialog.getCategory();
             String publishCom = dialog.getPublishCom();
             String shelf = dialog.getShelf();
             int price = dialog.getPrice();
@@ -183,16 +176,9 @@ public class ManageBook extends javax.swing.JFrame {
             for (int i = 0; i < numberOfBook; i++) {
                 book = new Books(bookName, author, publishCom,
                         categoryId, shelf, price, publishYear);
-                String cat = null;
                 if (book.save()) {
-                    for (Categories catItem : listCategory) {
-                        if (book.getCategoryId() == catItem.getCategoryId()) {
-                            cat = catItem.getCategoryName();
-                            break;
-                        }
-                    }
                     model.addRow(new Object[]{book.getBookId(), book.getBookName(),
-                        book.getAuthor(), cat,
+                        book.getAuthor(), book.getCategory().getCategoryName(),
                         book.getPublishCom(), book.getShelf(),
                         book.getPrice(), book.getPublishYear()});
                 } else {
@@ -217,20 +203,21 @@ public class ManageBook extends javax.swing.JFrame {
                 }
             }
             DialogBook dialog = new DialogBook(this, true);
-            dialog.setValues(bookId, book.getBookName(), book.getAuthor(), book.getCategoryId(),
+            dialog.setValues(bookId, book.getBookName(), book.getAuthor(), book.getCategory(),
                     book.getPublishCom(), book.getShelf(), book.getPrice(), book.getPublishYear());
             dialog.setVisible(true);
             if (dialog.isModify()) {
                 String bookName = dialog.getBookName();
                 String author = dialog.getAuthor();
-                int categoryId = dialog.getCategoryId();
+                Categories category = dialog.getCategory();
                 String publishCom = dialog.getPublishCom();
                 String shelf = dialog.getShelf();
                 int price = dialog.getPrice();
                 int publishYear = dialog.getPublishYear();
+                
                 book.setBookName(bookName);
                 book.setAuthor(author);
-                book.setCategoryId(categoryId);
+                book.setCategory(category);
                 book.setPublishCom(publishCom);
                 book.setShelf(shelf);
                 book.setPrice(price);
@@ -239,19 +226,11 @@ public class ManageBook extends javax.swing.JFrame {
                     //System.out.println("Here");
                     model.setValueAt(bookName, selectedRow, 1);
                     model.setValueAt(author, selectedRow, 2);
-                    String cat = null;
-                    for (Categories catItem : listCategory) {
-                        if (book.getCategoryId() == catItem.getCategoryId()) {
-                            cat = catItem.getCategoryName();
-                            break;
-                        }
-                    }
-                    model.setValueAt(cat, selectedRow, 3);
+                    model.setValueAt(category.getCategoryName(), selectedRow, 3);
                     model.setValueAt(publishCom, selectedRow, 4);
                     model.setValueAt(shelf, selectedRow, 5);
                     model.setValueAt(price, selectedRow, 6);
                     model.setValueAt(publishYear, selectedRow, 7);
-                    //System.out.println(this.listBook.get(i).getBookName());
                 } else {
                     JOptionPane.showMessageDialog(this, "You do not have permission to edit book");
                 }
@@ -291,16 +270,10 @@ public class ManageBook extends javax.swing.JFrame {
         String str = this.txtFilter.getText();
         Pattern pattern = Pattern.compile("(?i).*" + str + ".*");
         for (Books bookItem : this.listBook) {
-            String cat = null;
             if (pattern.matcher(bookItem.getBookName()).matches()) {
-                for (Categories catItem : listCategory) {
-                    if (bookItem.getCategoryId() == catItem.getCategoryId()) {
-                        cat = catItem.getCategoryName();
-                        break;
-                    }
-                }
                 model.addRow(new Object[]{bookItem.getBookId(),
-                    bookItem.getBookName(), bookItem.getAuthor(), cat,
+                    bookItem.getBookName(), bookItem.getAuthor(), 
+                    bookItem.getCategory().getCategoryName(),
                     bookItem.getPublishCom(), bookItem.getShelf(),
                     bookItem.getPrice(), bookItem.getPublishYear()});
 

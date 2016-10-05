@@ -6,6 +6,7 @@
 package com.hk.objs;
 
 import com.hk.database.Database;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -90,5 +91,9 @@ public class Users {
     
     public boolean save() {
         return Database.saveUser(this);
+    }
+    
+    public static ArrayList<Users> getAllUser() {
+        return Database.getAllUsers();
     }
 }

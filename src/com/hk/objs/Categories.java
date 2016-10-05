@@ -17,6 +17,12 @@ public class Categories {
     private String categoryName;
     private String description;
 
+    public Categories() {
+        this.categoryId = -1;
+        this.categoryName = "";
+        this.description = "";
+    }
+    
     public Categories(String categoryName, String description) {
         this.categoryId = -1;
         this.categoryName = categoryName;

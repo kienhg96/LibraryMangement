@@ -17,7 +17,7 @@ public class DialogCategory extends javax.swing.JDialog {
     public DialogCategory(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        this.txtCategoryId.setEditable(false);
+        this.txtCategoryId.setEnabled(false);
         this.txtCategoryName.requestFocus();
     }
     

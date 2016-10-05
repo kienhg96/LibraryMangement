@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -129,7 +130,7 @@ public class Database {
                     stmt.setString(1, book.getBookName());
                     stmt.setString(2, book.getAuthor());
                     stmt.setString(3, book.getPublishCom());
-                    stmt.setInt(4, book.getCategoryId());
+                    stmt.setInt(4, book.getCategory().getCategoryId());
                     stmt.setString(5, book.getShelf());
                     stmt.setInt(6, book.getPrice());
                     stmt.setInt(7, book.getPublishYear());
@@ -147,7 +148,7 @@ public class Database {
                     stmt.setString(1, book.getBookName());
                     stmt.setString(2, book.getAuthor());
                     stmt.setString(3, book.getPublishCom());
-                    stmt.setInt(4, book.getCategoryId());
+                    stmt.setInt(4, book.getCategory().getCategoryId());
                     stmt.setString(5, book.getShelf());
                     stmt.setInt(6, book.getPrice());
                     stmt.setInt(7, book.getPublishYear());
@@ -165,7 +166,7 @@ public class Database {
             return false;
         }
     }
-    
+
     public static boolean removeBook(Books book) {
         initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
@@ -191,7 +192,7 @@ public class Database {
             try {
                 PreparedStatement stmt = conn.prepareStatement(
                         "INSERT INTO users "
-                        + "VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE"
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
                         + "password=?, fullname=?, birthday=?, address=?, phone=?, expirationDate=?");
                 stmt.setString(1, user.getUsername());
                 stmt.setString(2, user.getPassword());
@@ -374,14 +375,25 @@ public class Database {
         Books book = null;
         try {
             Statement stmt = conn.createStatement();
-            String query = "SELECT * FROM Books WHERE bookId=" + id + ";";
+            String query = "SELECT Books.*, Categories.categoryName, Categories.description "
+                    + "FROM Books, Categories "
+                    + "WHERE Books.categoryId = Categories.categoryId "
+                    + "and bookId=" + id;
             ResultSet rs = stmt.executeQuery(query);
             if (rs.next()) {
-                book = new Books(rs.getString("bookName"), rs.getString("author"),
-                        rs.getString("publishCom"), rs.getInt("categoryId"),
-                        rs.getString("shelf"),
-                        rs.getInt("price"), rs.getInt("publishYear"));
+                Categories category = new Categories();
+                category.setCategoryId(rs.getInt("categoryId"));
+                category.setCategoryName(rs.getString("categoryName"));
+                category.setDescription(rs.getString("description"));
+                book = new Books();
                 book.setBookId(rs.getInt("bookId"));
+                book.setBookName(rs.getString("bookName"));
+                book.setAuthor(rs.getString("author"));
+                book.setPublishCom(rs.getString("publishCom"));
+                book.setCategory(category);
+                book.setShelf(rs.getString("shelf"));
+                book.setPrice(rs.getInt("price"));
+                book.setPublishYear(rs.getInt("publishYear"));
             }
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
@@ -394,15 +406,28 @@ public class Database {
     public static ArrayList<Books> findBookByName(String name) {
         ArrayList<Books> list = new ArrayList<>();
         Books book;
+        Categories category;
         try {
             Statement stmt = conn.createStatement();
-            String query = "SELECT * FROM Books WHERE bookName LIKE '%" + name + "%';";
+            String query = "SELECT Books.*, Categories.categoryName, Categories.description "
+                    + "FROM Books, Categories WHERE Books.categoryId = Categories.categoryId "
+                    + "and bookName LIKE '%" + name + "%'";
+            //System.out.println(query);
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                book = new Books(rs.getString("bookName"), rs.getString("author"),
-                        rs.getString("publishCom"), rs.getInt("categoryId"), rs.getString("shelf"),
-                        rs.getInt("price"), rs.getInt("publishYear"));
+                book = new Books();
+                category = new Categories();
+                category.setCategoryId(rs.getInt("categoryId"));
+                category.setCategoryName(rs.getString("categoryName"));
+                category.setDescription(rs.getString("description"));
                 book.setBookId(rs.getInt("bookId"));
+                book.setBookName(rs.getString("bookName"));
+                book.setAuthor(rs.getString("author"));
+                book.setPublishCom(rs.getString("publishCom"));
+                book.setCategory(category);
+                book.setShelf(rs.getString("shelf"));
+                book.setPrice(rs.getInt("price"));
+                book.setPublishYear(rs.getInt("publishYear"));
                 list.add(book);
             }
         } catch (SQLException ex) {
@@ -416,15 +441,27 @@ public class Database {
     public static ArrayList<Books> findBookByAuthor(String author) {
         ArrayList<Books> list = new ArrayList<>();
         Books book;
+        Categories category = new Categories();
         try {
             Statement stmt = conn.createStatement();
-            String query = "SELECT * FROM Books WHERE author LIKE '%" + author + "%';";
+            String query = "SELECT Books.*, Categories.categoryName, Categories.description "+
+                    "FROM Books, Categories WHERE Books.categoryId = Categories.categoryId "+
+                    "and author LIKE '%" + author + "%';";
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                book = new Books(rs.getString("bookName"), rs.getString("author"),
-                        rs.getString("publishCom"), rs.getInt("categoryId"), rs.getString("shelf"),
-                        rs.getInt("price"), rs.getInt("publishYear"));
+                book = new Books();
+                category = new Categories();
+                category.setCategoryId(rs.getInt("categoryId"));
+                category.setCategoryName(rs.getString("categoryName"));
+                category.setDescription(rs.getString("description"));
                 book.setBookId(rs.getInt("bookId"));
+                book.setBookName(rs.getString("bookName"));
+                book.setAuthor(rs.getString("author"));
+                book.setPublishCom(rs.getString("publishCom"));
+                book.setCategory(category);
+                book.setShelf(rs.getString("shelf"));
+                book.setPrice(rs.getInt("price"));
+                book.setPublishYear(rs.getInt("publishYear"));
                 list.add(book);
             }
         } catch (SQLException ex) {
@@ -435,21 +472,31 @@ public class Database {
         return list;
     }
 
-    public static ArrayList<Books> findBookByCategory(String category) {
+    public static ArrayList<Books> findBookByCategory(String categoryName) {
         ArrayList<Books> list = new ArrayList<>();
         Books book;
+        Categories category;
         try {
             Statement stmt = conn.createStatement();
-            String query = "SELECT Books.* from Books, Categories "
+            String query = "SELECT Books.*, Categories.categoryName, Categories.description "
+                    + "from Books, Categories "
                     + "WHERE Books.categoryId = categories.categoryId "
-                    + "AND categories.categoryName like '%" + category + "%';";
-//            System.out.println(query);
+                    + "AND categories.categoryName like '%" + categoryName + "%';";
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                book = new Books(rs.getString("bookName"), rs.getString("author"),
-                        rs.getString("publishCom"), rs.getInt("categoryId"), rs.getString("shelf"),
-                        rs.getInt("price"), rs.getInt("publishYear"));
+                book = new Books();
+                category = new Categories();
+                category.setCategoryId(rs.getInt("categoryId"));
+                category.setCategoryName(rs.getString("categoryName"));
+                category.setDescription(rs.getString("description"));
                 book.setBookId(rs.getInt("bookId"));
+                book.setBookName(rs.getString("bookName"));
+                book.setAuthor(rs.getString("author"));
+                book.setPublishCom(rs.getString("publishCom"));
+                book.setCategory(category);
+                book.setShelf(rs.getString("shelf"));
+                book.setPrice(rs.getInt("price"));
+                book.setPublishYear(rs.getInt("publishYear"));
                 list.add(book);
             }
         } catch (SQLException ex) {
@@ -464,16 +511,26 @@ public class Database {
         initialize(); // Remove after complete
         ArrayList<Books> list = new ArrayList<>();
         Books book;
+        Categories category;
         try {
             Statement stmt = conn.createStatement();
-            String query = "SELECT * FROM Books";
+            String query = "SELECT Books.*, Categories.categoryName, Categories.description " 
+                    + "From Books, Categories Where Books.CategoryId = Categories.CategoryId";
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                book = new Books(rs.getString("bookName"), rs.getString("author"),
-                        rs.getString("publishCom"), rs.getInt("categoryId"), 
-                        rs.getString("shelf"), rs.getInt("price"), 
-                        rs.getInt("publishYear"));
+                book = new Books();
+                category = new Categories();
+                category.setCategoryId(rs.getInt("categoryId"));
+                category.setCategoryName(rs.getString("categoryName"));
+                category.setDescription(rs.getString("description"));
                 book.setBookId(rs.getInt("bookId"));
+                book.setBookName(rs.getString("bookName"));
+                book.setAuthor(rs.getString("author"));
+                book.setPublishCom(rs.getString("publishCom"));
+                book.setCategory(category);
+                book.setShelf(rs.getString("shelf"));
+                book.setPrice(rs.getInt("price"));
+                book.setPublishYear(rs.getInt("publishYear"));
                 list.add(book);
             }
         } catch (SQLException ex) {
@@ -506,6 +563,32 @@ public class Database {
         return list;
     }
 
+    public static ArrayList<Users> getAllUsers() {
+        initialize(); // Remove after complete
+        ArrayList<Users> list = new ArrayList<>();
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                Statement stmt = conn.createStatement();
+                String query = "SELECT * FROM users;";
+                ResultSet rs = stmt.executeQuery(query);
+                Users user;
+                while (rs.next()) {
+                    user = new Users(rs.getString("username"), rs.getString("password"),
+                            rs.getString("fullname"), rs.getDate("birthday"),
+                            rs.getString("address"), rs.getString("phone"),
+                            rs.getDate("expirationDate"));
+                    list.add(user);
+                }
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+            }
+
+        }
+        return list;
+    }
+
     public static boolean removeCategory(Categories category) {
         initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
@@ -525,14 +608,23 @@ public class Database {
         }
     }
 
+    public static Date newDate(int day, int month, int year) {
+        LocalDate date = LocalDate.of(year, month, day);
+        return localDateToDate(date);
+    }
+
     public static Date localDateToDate(LocalDate localDate) {
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
     public static void main(String[] args) {
+        AdminsAuth.login("admin", "admin");
         ArrayList<Books> list = getAllBooks();
-        for (Books item: list) {
-            System.out.println(item.getBookName());
+        for (Books book : list) {
+            System.out.println(book.getBookName() + " " + 
+                    book.getCategory().getCategoryName() + " " + 
+                    book.getCategory().getDescription());
         }
+        System.out.println(list.size());
     }
 }
