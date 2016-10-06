@@ -12,7 +12,6 @@ CREATE TABLE Admins(
 	username VARCHAR(100) PRIMARY KEY NOT NULL,
     password VARCHAR(100) NOT NULL,
     fullname VARCHAR(100) NOT NULL,
-    privilege VARCHAR(10) NOT NULL, -- 0: Librarians, 1: Managers
     phone    VARCHAR(20)
 );
 
@@ -48,27 +47,35 @@ CREATE TABLE BorrowDetails(
 );
 
 CREATE TABLE ReturnBooks(
-	borrowDetailId INTEGER NOT NULL,
+	borrowDetailId INTEGER NOT NULL PRIMARY KEY,
     returnDate DATE NOT NULL,
     penalty INTEGER
 );
 
+
 ALTER TABLE returnbooks
-	ADD CONSTRAINT fkBorrowDetail foreign key (borrowDetailId) references BorrowDetails(borrowDetailId);
+	ADD CONSTRAINT fkBorrowDetail foreign key (borrowDetailId) 
+    references BorrowDetails(borrowDetailId) ON DELETE CASCADE;
+
 
 ALTER TABLE Books
-	ADD CONSTRAINT fkCategory FOREIGN KEY (categoryId) references categories(categoryId);
+	ADD CONSTRAINT fkCategory FOREIGN KEY (categoryId) 
+    references categories(categoryId) ON DELETE CASCADE;
 
 ALTER TABLE borrows 
-	ADD CONSTRAINT fkUser foreign key (borrowUser) references users(username);
+	ADD CONSTRAINT fkUser foreign key (borrowUser) 
+    references users(username) ON DELETE CASCADE;
 
 ALTER TABLE BorrowDetails
-	ADD CONSTRAINT fkBorrowId foreign key (borrowId) references borrows(borrowId);
-    
+	ADD CONSTRAINT fkBorrowId foreign key (borrowId) 
+    references borrows(borrowId) ON DELETE CASCADE;
+
 ALTER TABLE BorrowDetails
-    ADD CONSTRAINT fkBookId foreign key (bookId) references books(bookId);
-    
-ALTER TABLE Returns 
-	ADD CONSTRAINT fk_BorrowId foreign key (borrowId) references borrows(borrowId);
+    ADD CONSTRAINT fkBookId foreign key (bookId) 
+    references books(bookId) ON DELETE CASCADE;
+
+ALTER TABLE Returnbooks 
+	ADD CONSTRAINT fk_BorrowId foreign key (borrowDetailId) 
+    references BorrowDetails(borrowDetailId) ON DELETE CASCADE;
 
     

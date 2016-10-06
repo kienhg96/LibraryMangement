@@ -13,22 +13,17 @@ import java.util.Date;
  * @author hoangkien
  */
 public class ReturnBooks {
-    private int borrowDetailId;
     private Date returnDate;
     private int penalty;
 
-    public ReturnBooks(int borrowDetailId, Date returnDate, int penalty) {
-        this.borrowDetailId = borrowDetailId;
+    public ReturnBooks() {
+        this.returnDate = null;
+        this.penalty = 0;
+    }
+    
+    public ReturnBooks(Date returnDate, int penalty) {
         this.returnDate = returnDate;
         this.penalty = penalty;
-    }
-
-    public int getBorrowDetailId() {
-        return borrowDetailId;
-    }
-
-    public void setBorrowDetailId(int borrowDetailId) {
-        this.borrowDetailId = borrowDetailId;
     }
 
     public Date getReturnDate() {
@@ -47,7 +42,7 @@ public class ReturnBooks {
         this.penalty = penalty;
     }
     
-    public boolean save(){
-        return Database.saveReturnBook(this);
+    public boolean save(BorrowDetails detail){
+        return Database.saveReturnBook(detail.getBorrowDetailId(), this);
     } 
 }

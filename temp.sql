@@ -10,7 +10,11 @@ select * from categories;
 select * from borrows;
 
 select * from borrowdetails;
-delete from borrowdetails where borrowdetailid=4;
+
+select * from returnBooks;
+
+
+delete from borrows where borrowId=7;
 select * from returnBooks;
 delete from returnBooks where borrowDetailId = 4;
 select * from borrows;
@@ -86,5 +90,28 @@ from Books, categories
 WHERE Books.categoryId = categories.categoryId;
 
 SELECT Books.*, Categories.categoryName, Categories.description 
-FROM Books WHERE Books.categoryId = Categories.categoryId 
+FROM Books, Categories WHERE Books.categoryId = Categories.categoryId 
 and Books.bookName LIKE '%A%';
+
+-- sach dang muon
+select bookID from borrowdetails
+where borrowDetailId not in (
+	select borrowdetails.borrowDetailId from borrowdetails, returnbooks
+	where borrowDetails.borrowDetailId = returnbooks.borrowDetailId);
+
+-- Sach co the muon
+select books.*, Categories.categoryName, Categories.description from books, categories 
+where Books.CategoryId = Categories.CategoryId and bookId not in
+	(select bookID from borrowdetails where borrowDetailId not in 
+			(select borrowdetails.borrowDetailId from borrowdetails, returnbooks
+				where borrowDetails.borrowDetailId = returnbooks.borrowDetailId)
+);
+select * from books;
+
+select borrowDetailId, bookId from borrowdetails;
+
+select bookID from borrowdetails
+where bookId = 2 and borrowDetailId not in (
+	select borrowdetails.borrowDetailId from borrowdetails, returnbooks
+	where borrowDetails.borrowDetailId = returnbooks.borrowDetailId);
+

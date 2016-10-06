@@ -101,6 +101,40 @@ public class Database {
         return user;
     }
 
+    public static Users findUserByUsername(String username) {
+        initialize(); // Remove after complete
+        Users user = null;
+        if (AdminsAuth.getAdmin() != null) {
+            try {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "SELECT * FROM users WHERE username=?");
+                stmt.setString(1, username);
+                ResultSet result = stmt.executeQuery();
+                if (result.next()) {
+                    String fullname = result.getString("fullname");
+                    Date birthday = result.getDate("birthday");
+                    String address = result.getString("address");
+                    String phone = result.getString("phone");
+                    Date expirationDate = result.getDate("expirationDate");
+                    String password = result.getString("password");
+                    //user = new Users(username, password, fullname, birthday, address, phone, expirationDate);
+                    user = new Users(username);
+                    user.setRawPassword(password);
+                    user.setFullname(fullname);
+                    user.setBirthday(birthday);
+                    user.setAddress(address);
+                    user.setPhone(phone);
+                    user.setExpirationDate(expirationDate);
+                }
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+            }
+        }
+        return user;
+    }
+
     public static Admins checkAdminLogin(String username, String password) {
         Admins admin = null;
         initialize(); // Remove after complete
@@ -231,7 +265,7 @@ public class Database {
             return false;
         }
     }
-    
+
     public static boolean deleteUser(Users user) {
         initialize(); // remove after complete
         if (AdminsAuth.getAdmin() != null) {
@@ -240,16 +274,14 @@ public class Database {
                         "DELETE FROM Users WHERE username=?");
                 stmt.setString(1, user.getUsername());
                 stmt.executeUpdate();
-            }
-            catch (SQLException ex) {
+            } catch (SQLException ex) {
                 System.out.println("SQLException: " + ex.getMessage());
                 System.out.println("SQLState: " + ex.getSQLState());
                 System.out.println("VendorError: " + ex.getErrorCode());
                 return false;
             }
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -325,20 +357,31 @@ public class Database {
         initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
-                PreparedStatement stmt = conn.prepareStatement(
-                        "INSERT INTO borrows (borrowDate, borrowUser, expirationDate, deposit) "
-                        + "VALUES (?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-                stmt.setDate(1, new java.sql.Date(borrow.getBorrowDate().getTime()));
-                stmt.setString(2, borrow.getBorrowUser());
-                stmt.setDate(3, new java.sql.Date(borrow.getExpirationDate().getTime()));
-                stmt.setInt(4, borrow.getDeposit());
-                //System.out.println(stmt.toString());
-                stmt.executeUpdate();
-                ResultSet key = stmt.getGeneratedKeys();
-                if (key.next()) {
-                    borrow.setBorrowId(key.getInt(1));
+                if (borrow.getBorrowId() == -1) {
+                    PreparedStatement stmt = conn.prepareStatement(
+                            "INSERT INTO borrows (borrowDate, borrowUser, expirationDate, deposit) "
+                            + "VALUES (?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+                    stmt.setDate(1, new java.sql.Date(borrow.getBorrowDate().getTime()));
+                    stmt.setString(2, borrow.getBorrowUser().getUsername());
+                    stmt.setDate(3, new java.sql.Date(borrow.getExpirationDate().getTime()));
+                    stmt.setInt(4, borrow.getDeposit());
+                    stmt.executeUpdate();
+                    ResultSet key = stmt.getGeneratedKeys();
+                    if (key.next()) {
+                        borrow.setBorrowId(key.getInt(1));
+                    }
                 } else {
-                    System.out.println("Cannot get Key");
+                    PreparedStatement stmt = conn.prepareStatement(
+                            "UPDATE borrows " +
+                            "SET borrowDate = ?, borrowUser = ?, "+
+                                "expirationDate = ?, deposit = ? " +
+                            "WHERE borrowId = ?");
+                    stmt.setDate(1, new java.sql.Date(borrow.getBorrowDate().getTime()));
+                    stmt.setString(2, borrow.getBorrowUser().getUsername());
+                    stmt.setDate(3, new java.sql.Date(borrow.getExpirationDate().getTime()));
+                    stmt.setInt(4, borrow.getDeposit());
+                    stmt.setInt(5, borrow.getBorrowId());
+                    stmt.executeUpdate();
                 }
             } catch (SQLException ex) {
                 System.out.println("SQLException: " + ex.getMessage());
@@ -352,19 +395,32 @@ public class Database {
         }
     }
 
-    public static boolean saveBorrowDetail(BorrowDetails detail) {
+    public static boolean saveBorrowDetail(int borrowId, BorrowDetails detail) {
         initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
-                PreparedStatement stmt = conn.prepareStatement(
-                        "INSERT INTO borrowdetails (borrowId, bookId)"
-                        + "VALUES (?, ?);", Statement.RETURN_GENERATED_KEYS);
-                stmt.setInt(1, detail.getBorrowId());
-                stmt.setInt(2, detail.getBookId());
-                stmt.executeUpdate();
-                ResultSet key = stmt.getGeneratedKeys();
-                if (key.next()) {
-                    detail.setBorrowDetailId(key.getInt(1));
+                if (detail.getBorrowDetailId() == -1) {
+                    PreparedStatement stmt = conn.prepareStatement(
+                            "INSERT INTO borrowdetails (borrowId, bookId)"
+                            + "VALUES (?, ?)",
+                            Statement.RETURN_GENERATED_KEYS);
+                    stmt.setInt(1, borrowId);
+                    stmt.setInt(2, detail.getBook().getBookId());
+                    stmt.executeUpdate();
+                    ResultSet key = stmt.getGeneratedKeys();
+                    if (key.next()) {
+                        detail.setBorrowDetailId(key.getInt(1));
+                    }
+                }
+                else {
+                    PreparedStatement stmt = conn.prepareStatement(
+                            "UPDATE borrowdetails " +
+                            "SET borrowId = ?, bookId = ? " +
+                            "WHERE borrowDetailId = ?");
+                    stmt.setInt(1, borrowId);
+                    stmt.setInt(2, detail.getBook().getBookId());
+                    stmt.setInt(3, detail.getBorrowDetailId());
+                    stmt.executeUpdate();
                 }
             } catch (SQLException ex) {
                 System.out.println("SQLException: " + ex.getMessage());
@@ -378,17 +434,21 @@ public class Database {
         }
     }
 
-    public static boolean saveReturnBook(ReturnBooks rb) {
+    public static boolean saveReturnBook(int borrowDetailId, ReturnBooks rb) {
         initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 PreparedStatement stmt = conn.prepareStatement(
                         "INSERT INTO returnbooks "
-                        + "VALUES (?, ?, ?);");
-                stmt.setInt(1, rb.getBorrowDetailId());
-                stmt.setDate(2, new java.sql.Date(rb.getReturnDate().getTime()));
+                        + "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE "
+                        + "returnDate = ?, penalty = ?");
+                java.sql.Date returnDate = 
+                        new java.sql.Date(rb.getReturnDate().getTime());
+                stmt.setInt(1, borrowDetailId);
+                stmt.setDate(2, returnDate);
                 stmt.setInt(3, rb.getPenalty());
-                //System.out.println(stmt);
+                stmt.setDate(4, returnDate);
+                stmt.setInt(5, rb.getPenalty());
                 stmt.executeUpdate();
             } catch (SQLException ex) {
                 System.out.println("SQLException: " + ex.getMessage());
@@ -471,12 +531,12 @@ public class Database {
     public static ArrayList<Books> findBookByAuthor(String author) {
         ArrayList<Books> list = new ArrayList<>();
         Books book;
-        Categories category = new Categories();
+        Categories category;
         try {
             Statement stmt = conn.createStatement();
-            String query = "SELECT Books.*, Categories.categoryName, Categories.description "+
-                    "FROM Books, Categories WHERE Books.categoryId = Categories.categoryId "+
-                    "and author LIKE '%" + author + "%';";
+            String query = "SELECT Books.*, Categories.categoryName, Categories.description "
+                    + "FROM Books, Categories WHERE Books.categoryId = Categories.categoryId "
+                    + "and author LIKE '%" + author + "%';";
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 book = new Books();
@@ -544,7 +604,7 @@ public class Database {
         Categories category;
         try {
             Statement stmt = conn.createStatement();
-            String query = "SELECT Books.*, Categories.categoryName, Categories.description " 
+            String query = "SELECT Books.*, Categories.categoryName, Categories.description "
                     + "From Books, Categories Where Books.CategoryId = Categories.CategoryId";
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -569,6 +629,108 @@ public class Database {
             System.out.println("VendorError: " + ex.getErrorCode());
         }
         return list;
+    }
+    
+    public static ArrayList<Books> getAllBookAvailable() {
+        ArrayList<Books> list = new ArrayList<>();
+        Books book;
+        Categories category;
+        String sql = "select Books.*, Categories.categoryName, Categories.description "+
+                     "from books, categories "+
+                     "where Books.CategoryId = Categories.CategoryId and bookId not in " +
+                        "(select bookID from borrowdetails where borrowDetailId not in " +
+                            "(select borrowdetails.borrowDetailId from borrowdetails, returnbooks " +
+                                    "where borrowDetails.borrowDetailId = returnbooks.borrowDetailId));";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                book = new Books();
+                category = new Categories();
+                category.setCategoryId(rs.getInt("categoryId"));
+                category.setCategoryName(rs.getString("categoryName"));
+                category.setDescription(rs.getString("description"));
+                book.setBookId(rs.getInt("bookId"));
+                book.setBookName(rs.getString("bookName"));
+                book.setAuthor(rs.getString("author"));
+                book.setPublishCom(rs.getString("publishCom"));
+                book.setCategory(category);
+                book.setShelf(rs.getString("shelf"));
+                book.setPrice(rs.getInt("price"));
+                book.setPublishYear(rs.getInt("publishYear"));
+                list.add(book);
+            }
+        }catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return list;
+    }
+    
+    public static ArrayList<Books> getAllBookNotAvailable() {
+        ArrayList<Books> list = new ArrayList<>();
+        Books book;
+        Categories category;
+        String sql = 
+            "select Books.*, Categories.categoryName, Categories.description "+
+                "from borrowdetails, Books, Categories " +
+                        "where Books.bookId = borrowdetails.bookId "+
+                        "and Books.CategoryId = Categories.CategoryId "+
+                        "and borrowDetailId not in ( " +
+                        "select borrowdetails.borrowDetailId "+
+                        "from borrowdetails, returnbooks " +
+                        "where borrowDetails.borrowDetailId = returnbooks.borrowDetailId );";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                book = new Books();
+                category = new Categories();
+                category.setCategoryId(rs.getInt("categoryId"));
+                category.setCategoryName(rs.getString("categoryName"));
+                category.setDescription(rs.getString("description"));
+                book.setBookId(rs.getInt("bookId"));
+                book.setBookName(rs.getString("bookName"));
+                book.setAuthor(rs.getString("author"));
+                book.setPublishCom(rs.getString("publishCom"));
+                book.setCategory(category);
+                book.setShelf(rs.getString("shelf"));
+                book.setPrice(rs.getInt("price"));
+                book.setPublishYear(rs.getInt("publishYear"));
+                list.add(book);
+            }
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return list;
+    }
+    
+    public static boolean checkBookAvailable(Books book) {
+        boolean result = true;
+        String sql = 
+            "select bookID from borrowdetails " +
+            "where bookId = ? and borrowDetailId not in ( " +
+            "select borrowdetails.borrowDetailId from borrowdetails, returnbooks " +
+            "where borrowDetails.borrowDetailId = returnbooks.borrowDetailId)";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, book.getBookId());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                result = false;
+            }
+            else {
+                result = true;
+            }
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        } 
+        return result;
     }
 
     public static ArrayList<Categories> getAllCategories() {
@@ -626,7 +788,8 @@ public class Database {
         initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
-                PreparedStatement stmt = conn.prepareStatement("DELETE FROM categories WHERE categoryId=?");
+                PreparedStatement stmt = conn.prepareStatement(
+                        "DELETE FROM categories WHERE categoryId=?");
                 stmt.setInt(1, category.getCategoryId());
                 stmt.executeUpdate();
             } catch (SQLException ex) {
@@ -652,12 +815,35 @@ public class Database {
 
     public static void main(String[] args) {
         AdminsAuth.login("admin", "admin");
-        Users user = new Users("hk3");
-        if (deleteUser(user)){
-            System.out.println("Success");
+        Borrows borrow = new Borrows();
+        Users user = findUserByUsername("nhai");
+        borrow.setBorrowDate(newDate(10, 10, 2016));
+        borrow.setBorrowUser(user);
+        borrow.setDeposit(100000);
+        borrow.setExpirationDate(newDate(12,10,2020));
+        
+        BorrowDetails detail = new BorrowDetails();
+        detail.setBook(findBookById(4));
+        
+//        ReturnBooks rb = new ReturnBooks();
+//        rb.setPenalty(25000);
+//        rb.setReturnDate(newDate(9,10,2016));
+//        detail.setReturnBook(rb);
+        
+        if (borrow.addBorrowDetail(detail)) {
+            System.out.println("OK");
+            borrow.save();
         }
         else {
             System.out.println("Failed");
         }
+
+        
+//        if (borrow.save()) {
+//            System.out.println("Success");
+//        }
+//        else {
+//            System.out.println("Failed");
+//        }               
     }
 }

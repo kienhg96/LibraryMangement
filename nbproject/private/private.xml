@@ -3,8 +3,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/_Project_Program/Netbean_Java/LibraryMangement/src/com/hk/objs/Users.java</file>
-            <file>file:/D:/_Project_Program/Netbean_Java/LibraryMangement/src/com/hk/gui/ManageUser.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/authenticate/AdminsAuth.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/Users.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/DialogUser.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/Borrows.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/Books.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/ReturnBooks.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/Categories.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/ManageUser.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/database/Database.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/LibrarianMain.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/Login.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/authenticate/UsersAuth.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/BorrowDetails.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/Admins.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/ManageCategory.java</file>
         </group>
     </open-files>
 </project-private>
