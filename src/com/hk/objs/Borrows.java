@@ -39,13 +39,13 @@ public class Borrows {
         this.deposit = deposit;
     }
 
-//    public ArrayList<BorrowDetails> getBorrowDetailList() {
-//        return borrowDetailList;
-//    }
-//
-//    public void setBorrowDetailList(ArrayList<BorrowDetails> borrowDetailList) {
-//        this.borrowDetailList = borrowDetailList;
-//    }
+    public ArrayList<BorrowDetails> getBorrowDetailList() {
+        return borrowDetailList;
+    }
+
+    public void setBorrowDetailList(ArrayList<BorrowDetails> borrowDetailList) {
+        this.borrowDetailList = borrowDetailList;
+    }
     
     public boolean addBorrowDetail(BorrowDetails detail) {
         if (Database.checkBookAvailable(detail.getBook())) {
@@ -108,5 +108,17 @@ public class Borrows {
         else {
             return false;
         }
+    }
+    
+    public static ArrayList<Borrows> getAllBorrowListByUser(Users user) {
+        ArrayList<Borrows> list = null;
+        list = Database.getAllBorrowListByUser(user);
+        for (Borrows item: list) {
+            item.setBorrowDetailList(Database.getAllBorrowDetailListByBorrow(item));
+            for (BorrowDetails detail: item.getBorrowDetailList()) {
+                detail.setReturnBook(Database.getReturnBookByBorrowDetail(detail));
+            }
+        }
+        return list;
     }
 }

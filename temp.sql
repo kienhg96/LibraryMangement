@@ -13,7 +13,6 @@ select * from borrowdetails;
 
 select * from returnBooks;
 
-
 delete from borrows where borrowId=7;
 select * from returnBooks;
 delete from returnBooks where borrowDetailId = 4;
