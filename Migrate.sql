@@ -5,7 +5,8 @@ CREATE TABLE Users(
     birthday DATE,
     address  VARCHAR(256),
     phone 	 VARCHAR(20),
-    expirationDate DATE NOT NULL
+    expirationDate DATE NOT NULL,
+    deposit INTEGER NOT NULL
 );
 
 CREATE TABLE Admins(
@@ -35,15 +36,14 @@ CREATE TABLE Books(
 CREATE TABLE Borrows(
 	borrowId INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
     borrowDate DATE NOT NULL,
-    borrowUser VARCHAR(100) NOT NULL,
-    expirationDate DATE NOT NULL,
-    deposit INTEGER
+    borrowUser VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE BorrowDetails(
 	borrowDetailId INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	borrowId INTEGER NOT NULL,
-    bookId INTEGER NOT NULL
+    bookId INTEGER NOT NULL,
+	expirationDate DATE NOT NULL
 );
 
 CREATE TABLE ReturnBooks(

@@ -123,6 +123,10 @@ public class Books {
     public boolean remove() {
         return Database.removeBook(this);
     }
+    
+    public static Books findBookById(int id) {
+        return Database.findBookById(id);
+    }
 
     public static ArrayList<Books> findBookByName(String name) {
         return Database.findBookByName(name);

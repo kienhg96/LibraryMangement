@@ -21,6 +21,7 @@ public class Users {
     private String address;
     private String phone;
     private Date expirationDate;
+    private int deposit;
 
     public Users(String username) {
         this.username = username;
@@ -30,10 +31,12 @@ public class Users {
         this.address = null;
         this.phone = null;
         this.expirationDate = null;
+        this.deposit = 0;
     }
     
     public Users(String username, String password, String fullName, 
-            Date birthday, String address, String phone, Date expirationDate) {
+            Date birthday, String address, String phone, Date expirationDate, 
+            int deposit) {
         this.username = username;
         this.password = Database.hashPassword(password);
         this.fullname = fullName;
@@ -41,6 +44,15 @@ public class Users {
         this.address = address;
         this.phone = phone;
         this.expirationDate = expirationDate;
+        this.deposit = deposit;
+    }
+
+    public int getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(int deposit) {
+        this.deposit = deposit;
     }
 
     public void setRawPassword(String raw){

@@ -16,6 +16,15 @@ public class BorrowDetails {
 
     private int borrowDetailId;
     private Books book;
+    private Date expirationDate;
+
+    public Date getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
+    }
     private ReturnBooks returnBook;
 
     public BorrowDetails() {
@@ -54,8 +63,7 @@ public class BorrowDetails {
             if (this.returnBook != null) {
                 result = this.returnBook.save(this);
             }
-        }
-        else {
+        } else {
             result = false;
         }
         return result;

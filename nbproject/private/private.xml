@@ -4,12 +4,18 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/authenticate/AdminsAuth.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/ManageBorrowBook.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/ManageBook.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/ManageReturnBook.java</file>
             <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/Users.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/DialogCategory.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/ReaderMain.java</file>
             <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/DialogUser.java</file>
             <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/Borrows.java</file>
             <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/Books.java</file>
             <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/ReturnBooks.java</file>
             <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/objs/Categories.java</file>
+            <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/DialogBook.java</file>
             <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/ManageUser.java</file>
             <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/database/Database.java</file>
             <file>file:/D:/_Project_Program/Netbean_Java/LibraryManagement/src/com/hk/gui/LibrarianMain.java</file>

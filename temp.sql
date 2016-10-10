@@ -9,7 +9,7 @@ select * from categories;
 
 select * from borrows;
 
-select * from borrowdetails;
+select * from borrowdetails where borrowId = 11;
 
 select * from returnBooks;
 
@@ -105,7 +105,14 @@ where Books.CategoryId = Categories.CategoryId and bookId not in
 			(select borrowdetails.borrowDetailId from borrowdetails, returnbooks
 				where borrowDetails.borrowDetailId = returnbooks.borrowDetailId)
 );
-select * from books;
+
+-- sach dang muon cua user
+select bookID, borrowUser from borrowdetails, borrows
+where borrows.borrowId = borrowdetails.borrowId and borrows.borrowUser like 'hk1' and 
+	borrowDetailId not in (
+	select borrowdetails.borrowDetailId from borrowdetails, returnbooks
+	where borrowDetails.borrowDetailId = returnbooks.borrowDetailId);
+    
 
 select borrowDetailId, bookId from borrowdetails;
 
@@ -114,3 +121,7 @@ where bookId = 2 and borrowDetailId not in (
 	select borrowdetails.borrowDetailId from borrowdetails, returnbooks
 	where borrowDetails.borrowDetailId = returnbooks.borrowDetailId);
 
+ALTER TABLE borrows
+	drop column expirationDate;
+ALTER TABLE borrowDetails
+	add expirationDate Date not null;

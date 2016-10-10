@@ -18,25 +18,43 @@ public class Borrows {
     private int borrowId;
     private Date borrowDate;
     private Users borrowUser;
-    private Date expirationDate;
-    private int deposit;
     private ArrayList<BorrowDetails> borrowDetailList;
 
     public Borrows() {
         this.borrowId = -1;
         this.borrowDate = null;
         this.borrowUser = null;
-        this.expirationDate = null;
-        this.deposit = 0;
         this.borrowDetailList = new ArrayList<>();
     }
 
-    public int getDeposit() {
-        return deposit;
+
+    public boolean borrowBook(Books book) {
+        if (Database.checkBookAvailable(book)) {
+            BorrowDetails detail = new BorrowDetails();
+            detail.setBook(book);
+            detail.setReturnBook(null);
+            this.borrowDetailList.add(detail);
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public void setDeposit(int deposit) {
-        this.deposit = deposit;
+    public boolean returnBook(Books book, int penalty, Date returnDate) {
+        for (BorrowDetails detail : borrowDetailList) {
+            if (detail.getBook().getBookId() == book.getBookId()) {
+                if (detail.getReturnBook() == null) {
+                    ReturnBooks rb = new ReturnBooks();
+                    rb.setPenalty(penalty);
+                    rb.setReturnDate(returnDate);
+                    detail.setReturnBook(rb);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
     }
 
     public ArrayList<BorrowDetails> getBorrowDetailList() {
@@ -46,13 +64,12 @@ public class Borrows {
     public void setBorrowDetailList(ArrayList<BorrowDetails> borrowDetailList) {
         this.borrowDetailList = borrowDetailList;
     }
-    
+
     public boolean addBorrowDetail(BorrowDetails detail) {
         if (Database.checkBookAvailable(detail.getBook())) {
             this.borrowDetailList.add(detail);
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -61,12 +78,9 @@ public class Borrows {
         return borrowId;
     }
 
-    public Borrows(Date borrowDate, Users borrowUser, Date expirationDate,
-            int deposit, ArrayList<BorrowDetails> borrowDetailList) {
+    public Borrows(Date borrowDate, Users borrowUser, ArrayList<BorrowDetails> borrowDetailList) {
         this.borrowDate = borrowDate;
         this.borrowUser = borrowUser;
-        this.expirationDate = expirationDate;
-        this.deposit = deposit;
         this.borrowDetailList = borrowDetailList;
     }
 
@@ -90,32 +104,25 @@ public class Borrows {
         this.borrowUser = borrowUser;
     }
 
-    public Date getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = expirationDate;
-    }
-
     public boolean save() {
         if (Database.saveBorrow(this)) {
             for (int i = 0; i < this.borrowDetailList.size(); i++) {
-                borrowDetailList.get(i).save(this);
+                if (!borrowDetailList.get(i).save(this)) {
+                    return false;
+                }
             }
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
-    
+
     public static ArrayList<Borrows> getAllBorrowListByUser(Users user) {
         ArrayList<Borrows> list = null;
         list = Database.getAllBorrowListByUser(user);
-        for (Borrows item: list) {
+        for (Borrows item : list) {
             item.setBorrowDetailList(Database.getAllBorrowDetailListByBorrow(item));
-            for (BorrowDetails detail: item.getBorrowDetailList()) {
+            for (BorrowDetails detail : item.getBorrowDetailList()) {
                 detail.setReturnBook(Database.getReturnBookByBorrowDetail(detail));
             }
         }

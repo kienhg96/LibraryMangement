@@ -27,7 +27,6 @@ public class ManageBook extends javax.swing.JFrame {
      * Creates new form ManageBook
      */
     public ManageBook() {
-        AdminsAuth.login("admin", "admin");
         initComponents();
         TableColumnModel colModel = this.tbBooks.getColumnModel();
         colModel.getColumn(0).setPreferredWidth(70);
@@ -37,7 +36,7 @@ public class ManageBook extends javax.swing.JFrame {
         //System.out.println(this.listBook.size());
         for (Books bookItem : listBook) {
             model.addRow(new Object[]{bookItem.getBookId(),
-                bookItem.getBookName(), bookItem.getAuthor(), 
+                bookItem.getBookName(), bookItem.getAuthor(),
                 bookItem.getCategory().getCategoryName(),
                 bookItem.getPublishCom(), bookItem.getShelf(),
                 bookItem.getPrice(), bookItem.getPublishYear()});
@@ -58,9 +57,20 @@ public class ManageBook extends javax.swing.JFrame {
         btnAddBook = new javax.swing.JButton();
         btnEditBook = new javax.swing.JButton();
         btnDeleteBook = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        txtFilter = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        btnClearAllFilter = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        txtFilterAuthor = new javax.swing.JTextField();
+        txtFilterID = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        txtFilterPublishCom = new javax.swing.JTextField();
+        txtFilterName = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
         btnFilter = new javax.swing.JButton();
+        txtFilterShelf = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        txtFilterYear = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -104,8 +114,31 @@ public class ManageBook extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Filter by Book name");
+        jLabel2.setText("Filter By Book ID");
 
+        btnClearAllFilter.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnClearAllFilter.setText("Clear Filter");
+        btnClearAllFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearAllFilterActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("By Author");
+
+        txtFilterAuthor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFilterAuthorActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("By Publish Com.");
+
+        jLabel3.setText("By Book name");
+
+        jLabel7.setText("By Shelf");
+
+        btnFilter.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         btnFilter.setText("Filter");
         btnFilter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -113,27 +146,57 @@ public class ManageBook extends javax.swing.JFrame {
             }
         });
 
+        jLabel8.setText("By Publish Year");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 784, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnAddBook, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(28, 28, 28)
                         .addComponent(btnEditBook, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnDeleteBook)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(33, 33, 33)
+                        .addComponent(btnDeleteBook)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtFilterID)
+                            .addComponent(txtFilterShelf, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtFilterName, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtFilterYear, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtFilterAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(14, 14, 14)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtFilterPublishCom))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnClearAllFilter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -145,18 +208,30 @@ public class ManageBook extends javax.swing.JFrame {
                     .addComponent(btnDeleteBook))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnFilter))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE))
+                    .addComponent(jLabel2)
+                    .addComponent(txtFilterID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtFilterName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtFilterAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtFilterPublishCom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(txtFilterShelf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8)
+                    .addComponent(txtFilterYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFilter)
+                    .addComponent(btnClearAllFilter))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddBookActionPerformed
-        //AdminsAuth.login("admin", "admin"); // Remove after complete
         DialogBook dialog = new DialogBook(this, true);
         dialog.setVisibleOfBook(true);
         dialog.setVisible(true);
@@ -169,9 +244,6 @@ public class ManageBook extends javax.swing.JFrame {
             String shelf = dialog.getShelf();
             int price = dialog.getPrice();
             int publishYear = dialog.getPublishYear();
-//            System.out.println(bookName + " " + author + " "
-//                    + categoryId + " " + publishCom + " " + shelf + " "
-//                    + price + " " + publishYear);
             Books book;
             for (int i = 0; i < numberOfBook; i++) {
                 book = new Books(bookName, author, publishCom,
@@ -182,15 +254,14 @@ public class ManageBook extends javax.swing.JFrame {
                         book.getPublishCom(), book.getShelf(),
                         book.getPrice(), book.getPublishYear()});
                 } else {
-                    JOptionPane.showMessageDialog(this, "You do not have permission to save this book");
+                    JOptionPane.showMessageDialog(this, 
+                            "You do not have permission to save this book");
                 }
             }
         }
     }//GEN-LAST:event_btnAddBookActionPerformed
 
     private void btnEditBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditBookActionPerformed
-        //AdminsAuth.login("admin", "admin"); // Remove after complete
-
         int selectedRow = this.tbBooks.getSelectedRow();
         if (selectedRow != -1) {
             int bookId = (int) this.tbBooks.getValueAt(selectedRow, 0);
@@ -214,7 +285,7 @@ public class ManageBook extends javax.swing.JFrame {
                 String shelf = dialog.getShelf();
                 int price = dialog.getPrice();
                 int publishYear = dialog.getPublishYear();
-                
+
                 book.setBookName(bookName);
                 book.setAuthor(author);
                 book.setCategory(category);
@@ -232,7 +303,8 @@ public class ManageBook extends javax.swing.JFrame {
                     model.setValueAt(price, selectedRow, 6);
                     model.setValueAt(publishYear, selectedRow, 7);
                 } else {
-                    JOptionPane.showMessageDialog(this, "You do not have permission to edit book");
+                    JOptionPane.showMessageDialog(this, 
+                            "You do not have permission to edit book");
                 }
             }
         } else {
@@ -242,18 +314,20 @@ public class ManageBook extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditBookActionPerformed
 
     private void btnDeleteBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteBookActionPerformed
-        //AdminsAuth.login("admin", "admin"); // Remove after complete
         int selectedRow = this.tbBooks.getSelectedRow();
         if (selectedRow != -1) {
-            int result = JOptionPane.showConfirmDialog(this, "Are you sure want to remove it");
+            int result = JOptionPane.showConfirmDialog(this, 
+                    "Are you sure want to remove it");
             if (result == JOptionPane.YES_OPTION) {
                 for (int i = 0; i < this.listBook.size(); i++) {
-                    if (this.listBook.get(i).getBookId() == (int) this.tbBooks.getValueAt(selectedRow, 0)) {
+                    if (this.listBook.get(i).getBookId() == 
+                            (int) this.tbBooks.getValueAt(selectedRow, 0)) {
                         if (listBook.get(i).remove()) {
                             this.model.removeRow(selectedRow);
                             this.listBook.remove(i);
                         } else {
-                            JOptionPane.showMessageDialog(this, "You do not have permission to Remove this category");
+                            JOptionPane.showMessageDialog(this, 
+                          "You do not have permission to Remove this category");
                         }
                         break;
                     }
@@ -264,26 +338,67 @@ public class ManageBook extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnDeleteBookActionPerformed
 
+    private void btnClearAllFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearAllFilterActionPerformed
+        this.txtFilterAuthor.setText("");
+        this.txtFilterID.setText("");
+        this.txtFilterName.setText("");
+        this.txtFilterPublishCom.setText("");
+        this.txtFilterShelf.setText("");
+        this.txtFilterYear.setText("");
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
+        for (Books bookItem : this.listBook) {
+            model.addRow(new Object[]{bookItem.getBookId(),
+                bookItem.getBookName(), bookItem.getAuthor(),
+                bookItem.getCategory().getCategoryName(),
+                bookItem.getPublishCom(), bookItem.getShelf(),
+                bookItem.getPrice(), bookItem.getPublishYear()
+            });
+        }
+    }//GEN-LAST:event_btnClearAllFilterActionPerformed
+
+    private void txtFilterAuthorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFilterAuthorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFilterAuthorActionPerformed
+
     private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
         model.getDataVector().removeAllElements();
         model.fireTableDataChanged();
-        String str = this.txtFilter.getText();
-        Pattern pattern = Pattern.compile("(?i).*" + str + ".*");
+        String filterID = this.txtFilterID.getText();
+        String filterName = this.txtFilterName.getText();
+        Pattern pattern1 = Pattern.compile("(?i).*" + filterID + ".*");
+        Pattern pattern2 = Pattern.compile("(?i).*" + filterName + ".*");
+        Pattern pattern3 = Pattern.compile("(?i).*"
+                + this.txtFilterAuthor.getText() + ".*");
+        Pattern pattern4 = Pattern.compile("(?i).*"
+                + this.txtFilterPublishCom.getText() + ".*");
+        Pattern pattern5 = Pattern.compile("(?i).*"
+                + this.txtFilterShelf.getText() + ".*");
+        Pattern pattern6 = Pattern.compile("(?i).*"
+                + this.txtFilterYear.getText() + ".*");
         for (Books bookItem : this.listBook) {
-            if (pattern.matcher(bookItem.getBookName()).matches()) {
+            if (pattern2.matcher(bookItem.getBookName()).matches()
+                    && pattern1.matcher(String.valueOf(
+                                    bookItem.getBookId())).matches()
+                    && pattern3.matcher(bookItem.getAuthor()).matches()
+                    && pattern4.matcher(bookItem.getPublishCom()).matches()
+                    && pattern5.matcher(bookItem.getShelf()).matches()
+                    && pattern6.matcher(String.valueOf(
+                                    bookItem.getPublishYear())).matches()) {
                 model.addRow(new Object[]{bookItem.getBookId(),
-                    bookItem.getBookName(), bookItem.getAuthor(), 
+                    bookItem.getBookName(), bookItem.getAuthor(),
                     bookItem.getCategory().getCategoryName(),
                     bookItem.getPublishCom(), bookItem.getShelf(),
-                    bookItem.getPrice(), bookItem.getPublishYear()});
-
+                    bookItem.getPrice(), bookItem.getPublishYear(),
+                    "Available"
+                });
             }
         }
     }//GEN-LAST:event_btnFilterActionPerformed
 
     /**
-     * @param args the command line arguments
-     */
+         * @param args the command line arguments
+         */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -318,12 +433,23 @@ public class ManageBook extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddBook;
+    private javax.swing.JButton btnClearAllFilter;
     private javax.swing.JButton btnDeleteBook;
     private javax.swing.JButton btnEditBook;
     private javax.swing.JButton btnFilter;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tbBooks;
-    private javax.swing.JTextField txtFilter;
+    private javax.swing.JTextField txtFilterAuthor;
+    private javax.swing.JTextField txtFilterID;
+    private javax.swing.JTextField txtFilterName;
+    private javax.swing.JTextField txtFilterPublishCom;
+    private javax.swing.JTextField txtFilterShelf;
+    private javax.swing.JTextField txtFilterYear;
     // End of variables declaration//GEN-END:variables
 }

@@ -26,7 +26,6 @@ public class ManageCategory extends javax.swing.JFrame {
 
     public ManageCategory() {
         initComponents();
-        // Set hand design
         model = (DefaultTableModel) this.tbCategories.getModel();
         tbCategories.getColumnModel().getColumn(0).setMaxWidth(100);
         categoryList = Categories.getAllCategory();
@@ -52,8 +51,13 @@ public class ManageCategory extends javax.swing.JFrame {
         btnRemoveCategory = new javax.swing.JButton();
         btnEditCategory = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        txtFilter = new javax.swing.JTextField();
+        txtFilterID = new javax.swing.JTextField();
         btnFilter = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txtFilterCatName = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtFilterDescription = new javax.swing.JTextField();
+        btnClearFilter = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Manage Category");
@@ -102,12 +106,25 @@ public class ManageCategory extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Filter by Category name");
+        jLabel1.setText("Filter by Category ID");
 
+        btnFilter.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         btnFilter.setText("Filter");
         btnFilter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnFilterActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("By Category Name");
+
+        jLabel3.setText("By Description");
+
+        btnClearFilter.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnClearFilter.setText("Clear Filter");
+        btnClearFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearFilterActionPerformed(evt);
             }
         });
 
@@ -117,20 +134,30 @@ public class ManageCategory extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnAddCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(21, 21, 21)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(txtFilter)
-                    .addComponent(btnRemoveCategory, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
+                        .addComponent(btnAddCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRemoveCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel1))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtFilterDescription)
+                            .addComponent(txtFilterID))))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnEditCategory, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-                    .addComponent(btnFilter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnEditCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtFilterCatName, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnClearFilter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
         );
@@ -145,10 +172,17 @@ public class ManageCategory extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnFilter))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtFilterID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtFilterCatName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnFilter)
+                    .addComponent(jLabel3)
+                    .addComponent(txtFilterDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnClearFilter))
+                .addGap(8, 8, 8)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 391, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -161,12 +195,12 @@ public class ManageCategory extends javax.swing.JFrame {
         if (dialog.isModify()) {
             Categories category = new Categories(dialog.getCategoryName(), dialog.getDescription());
             if (category.save()) {
-                //System.out.println("Save success");
                 model.addRow(new Object[]{category.getCategoryId(),
                     category.getCategoryName(), category.getDescription()});
                 this.categoryList.add(category);
             } else {
-                JOptionPane.showMessageDialog(null, "You do not have permission to add a Category");
+                JOptionPane.showMessageDialog(null, 
+                        "You do not have permission to add a Category");
             }
         }
     }//GEN-LAST:event_btnAddCategoryActionPerformed
@@ -175,11 +209,8 @@ public class ManageCategory extends javax.swing.JFrame {
         if (this.tbCategories.getSelectedRow() != -1) {
             int selectedRow = this.tbCategories.getSelectedRow();
             int categoryId = (int) this.tbCategories.getValueAt(selectedRow, 0);
-            String categoryName = (String) this.tbCategories.getValueAt(selectedRow, 1);
-            String description = (String) this.tbCategories.getValueAt(selectedRow, 2);
-//            System.out.println(categoryId);
-//            System.out.println(categoryName);
-//            System.out.println(description);
+            String categoryName = (String)tbCategories.getValueAt(selectedRow, 1);
+            String description = (String)tbCategories.getValueAt(selectedRow, 2);
             DialogCategory dialog = new DialogCategory(this, rootPaneCheckingEnabled);
             dialog.setCategoryId(categoryId);
             dialog.setCategoryName(categoryName);
@@ -202,7 +233,8 @@ public class ManageCategory extends javax.swing.JFrame {
                         }
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "You do not have permission to edit categories");
+                    JOptionPane.showMessageDialog(null, 
+                            "You do not have permission to edit categories");
                 }
             }
         } else {
@@ -211,14 +243,22 @@ public class ManageCategory extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditCategoryActionPerformed
 
     private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
-        //DefaultTableModel dm = (DefaultTableModel)this.tbCategories.getModel();
         model.getDataVector().removeAllElements();
         model.fireTableDataChanged();
-        String str = this.txtFilter.getText();
-        Pattern pattern = Pattern.compile("(?i).*" + str + ".*");
+        Pattern pattern1 = Pattern.compile("(?i).*"
+                + this.txtFilterID.getText() + ".*");
+        Pattern pattern2 = Pattern.compile("(?i).*"
+                + this.txtFilterCatName.getText() + ".*");
+        Pattern pattern3 = Pattern.compile("(?i).*"
+                + this.txtFilterDescription.getText() + ".*");
         for (Categories item : this.categoryList) {
-            if (pattern.matcher(item.getCategoryName()).matches()) {
-                model.addRow(new Object[]{item.getCategoryId(), item.getCategoryName(), item.getDescription()});
+            if (pattern1.matcher(String.valueOf(item.getCategoryId())).matches()
+                    && pattern2.matcher(item.getCategoryName()).matches()
+                    && pattern3.matcher(item.getDescription()).matches()) {
+                model.addRow(new Object[]{
+                    item.getCategoryId(),
+                    item.getCategoryName(),
+                    item.getDescription()});
             }
         }
     }//GEN-LAST:event_btnFilterActionPerformed
@@ -226,26 +266,42 @@ public class ManageCategory extends javax.swing.JFrame {
     private void btnRemoveCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveCategoryActionPerformed
         int selectedRow = this.tbCategories.getSelectedRow();
         if (selectedRow != -1) {
-            int result = JOptionPane.showConfirmDialog(this, "Are you sure want to remove " + 
-                    this.tbCategories.getValueAt(selectedRow, 1));
+            int result = JOptionPane.showConfirmDialog(this, 
+                    "Are you sure want to remove "
+                    + this.tbCategories.getValueAt(selectedRow, 1));
             if (result == JOptionPane.YES_OPTION) {
                 for (int i = 0; i < this.categoryList.size(); i++) {
-                    if (categoryList.get(i).getCategoryId() == (int) this.tbCategories.getValueAt(selectedRow, 0)) {
+                    if (categoryList.get(i).getCategoryId() == 
+                            (int) this.tbCategories.getValueAt(selectedRow, 0)) {
                         if (categoryList.get(i).remove()) {
                             this.model.removeRow(selectedRow);
                             this.categoryList.remove(i);
                         } else {
-                            JOptionPane.showMessageDialog(this, "You do not have permission to Remove this category");
+                            JOptionPane.showMessageDialog(this, 
+                                    "You do not have permission to Remove this category");
                         }
                         break;
                     }
                 }
             }
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(this, "You must choose a row");
         }
     }//GEN-LAST:event_btnRemoveCategoryActionPerformed
+
+    private void btnClearFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearFilterActionPerformed
+        this.txtFilterCatName.setText("");
+        this.txtFilterDescription.setText("");
+        this.txtFilterID.setText("");
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
+        for (Categories item : this.categoryList) {
+            model.addRow(new Object[]{
+                item.getCategoryId(),
+                item.getCategoryName(),
+                item.getDescription()});
+        }
+    }//GEN-LAST:event_btnClearFilterActionPerformed
 
     /**
      * @param args the command line arguments
@@ -284,12 +340,17 @@ public class ManageCategory extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddCategory;
+    private javax.swing.JButton btnClearFilter;
     private javax.swing.JButton btnEditCategory;
     private javax.swing.JButton btnFilter;
     private javax.swing.JButton btnRemoveCategory;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tbCategories;
-    private javax.swing.JTextField txtFilter;
+    private javax.swing.JTextField txtFilterCatName;
+    private javax.swing.JTextField txtFilterDescription;
+    private javax.swing.JTextField txtFilterID;
     // End of variables declaration//GEN-END:variables
 }

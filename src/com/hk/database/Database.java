@@ -76,7 +76,7 @@ public class Database {
 
     public static Users checkUserLogin(String username, String password) {
         Users user = null;
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         try {
             PreparedStatement stmt = conn.prepareStatement(
                     "SELECT * FROM users WHERE username=? and password=?;");
@@ -89,6 +89,7 @@ public class Database {
                 String address = result.getString("address");
                 String phone = result.getString("phone");
                 Date expirationDate = result.getDate("expirationDate");
+                int deposit = result.getInt("deposit");
                 user = new Users(username);
                 user.setRawPassword(password);
                 user.setFullname(fullname);
@@ -96,6 +97,7 @@ public class Database {
                 user.setAddress(address);
                 user.setPhone(phone);
                 user.setExpirationDate(expirationDate);
+                user.setDeposit(deposit);
             }
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
@@ -106,7 +108,7 @@ public class Database {
     }
 
     public static Users findUserByUsername(String username) {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         Users user = null;
         if (AdminsAuth.getAdmin() != null) {
             try {
@@ -121,6 +123,7 @@ public class Database {
                     String phone = result.getString("phone");
                     Date expirationDate = result.getDate("expirationDate");
                     String password = result.getString("password");
+                    int deposit = result.getInt("deposit");
                     user = new Users(username);
                     user.setRawPassword(password);
                     user.setFullname(fullname);
@@ -128,6 +131,7 @@ public class Database {
                     user.setAddress(address);
                     user.setPhone(phone);
                     user.setExpirationDate(expirationDate);
+                    user.setDeposit(deposit);
                 }
             } catch (SQLException ex) {
                 System.out.println("SQLException: " + ex.getMessage());
@@ -140,7 +144,7 @@ public class Database {
 
     public static Admins checkAdminLogin(String username, String password) {
         Admins admin = null;
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         try {
             PreparedStatement stmt = conn.prepareStatement(
                     "SELECT * FROM admins WHERE username=? and password=?;");
@@ -166,7 +170,7 @@ public class Database {
     }
 
     public static boolean saveBook(Books book) {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 if (book.getBookId() == -1) {
@@ -218,7 +222,7 @@ public class Database {
     }
 
     public static boolean removeBook(Books book) {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 PreparedStatement stmt = conn.prepareStatement(
@@ -238,15 +242,15 @@ public class Database {
     }
 
     public static boolean saveUser(Users user) {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 PreparedStatement stmt = conn.prepareStatement(
                         "INSERT INTO users " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
                         "ON DUPLICATE KEY UPDATE " +
                             "password=?, fullname=?, birthday=?, address=?, " +
-                            "phone=?, expirationDate=?");
+                            "phone=?, expirationDate=?, deposit=?");
                 stmt.setString(1, user.getUsername());
                 stmt.setString(2, user.getPassword());
                 stmt.setString(3, user.getFullname());
@@ -254,12 +258,14 @@ public class Database {
                 stmt.setString(5, user.getAddress());
                 stmt.setString(6, user.getPhone());
                 stmt.setDate(7, utilDateToSqlDate(user.getExpirationDate()));
-                stmt.setString(8, user.getPassword());
-                stmt.setString(9, user.getFullname());
-                stmt.setDate(10, utilDateToSqlDate(user.getBirthday()));
-                stmt.setString(11, user.getAddress());
-                stmt.setString(12, user.getPhone());
-                stmt.setDate(13, utilDateToSqlDate(user.getExpirationDate()));
+                stmt.setInt(8, user.getDeposit());
+                stmt.setString(9, user.getPassword());
+                stmt.setString(10, user.getFullname());
+                stmt.setDate(11, utilDateToSqlDate(user.getBirthday()));
+                stmt.setString(12, user.getAddress());
+                stmt.setString(13, user.getPhone());
+                stmt.setDate(14, utilDateToSqlDate(user.getExpirationDate()));
+                stmt.setInt(15, user.getDeposit());
                 stmt.executeUpdate();
             } catch (SQLException ex) {
                 System.out.println("SQLException: " + ex.getMessage());
@@ -274,7 +280,7 @@ public class Database {
     }
 
     public static boolean deleteUser(Users user) {
-        initialize(); // remove after complete
+        //initialize(); // remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 PreparedStatement stmt = conn.prepareStatement(
@@ -294,7 +300,7 @@ public class Database {
     }
 
     public static boolean saveAdmin(Admins admin) {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 PreparedStatement stmt = conn.prepareStatement(
@@ -323,7 +329,7 @@ public class Database {
     }
 
     public static boolean saveCategory(Categories category) {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 if (category.getCategoryId() == -1) {
@@ -360,20 +366,17 @@ public class Database {
     }
 
     public static boolean saveBorrow(Borrows borrow) {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 if (borrow.getBorrowId() == -1) {
                     PreparedStatement stmt = conn.prepareStatement(
                             "INSERT INTO borrows "+
-                            "(borrowDate, borrowUser, expirationDate, deposit) "
-                            + "VALUES (?, ?, ?, ?);", 
+                            "(borrowDate, borrowUser) "
+                            + "VALUES (?, ?);", 
                             Statement.RETURN_GENERATED_KEYS);
                     stmt.setDate(1, utilDateToSqlDate(borrow.getBorrowDate()));
                     stmt.setString(2, borrow.getBorrowUser().getUsername());
-                    stmt.setDate(3, utilDateToSqlDate(borrow.
-                            getExpirationDate()));
-                    stmt.setInt(4, borrow.getDeposit());
                     stmt.executeUpdate();
                     ResultSet key = stmt.getGeneratedKeys();
                     if (key.next()) {
@@ -382,15 +385,11 @@ public class Database {
                 } else {
                     PreparedStatement stmt = conn.prepareStatement(
                             "UPDATE borrows "
-                            + "SET borrowDate = ?, borrowUser = ?, "
-                            + "expirationDate = ?, deposit = ? "
+                            + "SET borrowDate = ?, borrowUser = ? "
                             + "WHERE borrowId = ?");
                     stmt.setDate(1, utilDateToSqlDate(borrow.getBorrowDate()));
                     stmt.setString(2, borrow.getBorrowUser().getUsername());
-                    stmt.setDate(3, utilDateToSqlDate(borrow.
-                            getExpirationDate()));
-                    stmt.setInt(4, borrow.getDeposit());
-                    stmt.setInt(5, borrow.getBorrowId());
+                    stmt.setInt(3, borrow.getBorrowId());
                     stmt.executeUpdate();
                 }
             } catch (SQLException ex) {
@@ -406,16 +405,17 @@ public class Database {
     }
 
     public static boolean saveBorrowDetail(int borrowId, BorrowDetails detail) {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 if (detail.getBorrowDetailId() == -1) {
                     PreparedStatement stmt = conn.prepareStatement(
-                            "INSERT INTO borrowdetails (borrowId, bookId)"
-                            + "VALUES (?, ?)",
+                            "INSERT INTO borrowdetails (borrowId, bookId, expirationDate)"
+                            + "VALUES (?, ?, ?)",
                             Statement.RETURN_GENERATED_KEYS);
                     stmt.setInt(1, borrowId);
                     stmt.setInt(2, detail.getBook().getBookId());
+                    stmt.setDate(3, utilDateToSqlDate(detail.getExpirationDate()));
                     stmt.executeUpdate();
                     ResultSet key = stmt.getGeneratedKeys();
                     if (key.next()) {
@@ -424,11 +424,12 @@ public class Database {
                 } else {
                     PreparedStatement stmt = conn.prepareStatement(
                             "UPDATE borrowdetails "
-                            + "SET borrowId = ?, bookId = ? "
+                            + "SET borrowId = ?, bookId = ?, expirationDate = ? "
                             + "WHERE borrowDetailId = ?");
                     stmt.setInt(1, borrowId);
                     stmt.setInt(2, detail.getBook().getBookId());
-                    stmt.setInt(3, detail.getBorrowDetailId());
+                    stmt.setDate(3, utilDateToSqlDate(detail.getExpirationDate()));
+                    stmt.setInt(4, detail.getBorrowDetailId());
                     stmt.executeUpdate();
                 }
             } catch (SQLException ex) {
@@ -444,7 +445,7 @@ public class Database {
     }
 
     public static boolean saveReturnBook(int borrowDetailId, ReturnBooks rb) {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 PreparedStatement stmt = conn.prepareStatement(
@@ -614,7 +615,7 @@ public class Database {
     }
 
     public static ArrayList<Books> getAllBooks() {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         ArrayList<Books> list = new ArrayList<>();
         Books book;
         Categories category;
@@ -651,6 +652,7 @@ public class Database {
     }
 
     public static ArrayList<Books> getAllBookAvailable() {
+        //initialize(); // remove after complete
         ArrayList<Books> list = new ArrayList<>();
         Books book;
         Categories category;
@@ -748,7 +750,7 @@ public class Database {
     }
 
     public static ArrayList<Categories> getAllCategories() {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         ArrayList<Categories> list = new ArrayList<>();
         try {
             Statement stmt = conn.createStatement();
@@ -770,7 +772,7 @@ public class Database {
     }
 
     public static ArrayList<Users> getAllUsers() {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         ArrayList<Users> list = new ArrayList<>();
         if (AdminsAuth.getAdmin() != null) {
             try {
@@ -786,6 +788,7 @@ public class Database {
                     user.setAddress(rs.getString("address"));
                     user.setPhone(rs.getString("phone"));
                     user.setExpirationDate(rs.getDate("expirationDate"));
+                    user.setDeposit(rs.getInt("deposit"));
                     list.add(user);
                 }
             } catch (SQLException ex) {
@@ -793,7 +796,6 @@ public class Database {
                 System.out.println("SQLState: " + ex.getSQLState());
                 System.out.println("VendorError: " + ex.getErrorCode());
             }
-
         }
         return list;
     }
@@ -811,8 +813,6 @@ public class Database {
                 borrow.setBorrowId(rs.getInt("borrowId"));
                 borrow.setBorrowDate(rs.getDate("borrowDate"));
                 borrow.setBorrowUser(user);
-                borrow.setExpirationDate(rs.getDate("expirationDate"));
-                borrow.setDeposit(rs.getInt("deposit"));
                 list.add(borrow);
             }
         } catch (SQLException ex) {
@@ -836,6 +836,7 @@ public class Database {
                 detail = new BorrowDetails();
                 detail.setBook(findBookById(rs.getInt("bookId")));
                 detail.setBorrowDetailId(rs.getInt("borrowDetailId"));
+                detail.setExpirationDate(rs.getDate("expirationDate"));
                 list.add(detail);
             }
         } catch (SQLException ex) {
@@ -867,7 +868,7 @@ public class Database {
     }
 
     public static boolean removeCategory(Categories category) {
-        initialize(); // Remove after complete
+        //initialize(); // Remove after complete
         if (AdminsAuth.getAdmin() != null) {
             try {
                 PreparedStatement stmt = conn.prepareStatement(
@@ -896,8 +897,6 @@ public class Database {
     }
 
     public static void main(String[] args) {
-        AdminsAuth.login("admin", "admin");
-        Users user = findUserByUsername("nhai");
-        ArrayList<Borrows> list = Borrows.getAllBorrowListByUser(user);
+        ArrayList<Books> list = getAllBookAvailable();
     }
 }

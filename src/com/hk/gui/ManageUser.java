@@ -28,8 +28,6 @@ public class ManageUser extends javax.swing.JFrame {
      * Creates new form ManageUser
      */
     public ManageUser() {
-
-        AdminsAuth.login("admin", "admin");
         initComponents();
 
         model = (DefaultTableModel) this.tbUser.getModel();
@@ -37,7 +35,9 @@ public class ManageUser extends javax.swing.JFrame {
         for (Users user : listUser) {
             model.addRow(new Object[]{user.getUsername(), user.getFullname(),
                 df.format(user.getBirthday()), user.getAddress(),
-                user.getPhone(), df.format(user.getExpirationDate())});
+                user.getPhone(), df.format(user.getExpirationDate()),
+                user.getDeposit()
+            });
         }
     }
 
@@ -66,11 +66,11 @@ public class ManageUser extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Username", "Fullname", "Birthday", "Address", "Phone Number", "Expiration Date"
+                "Username", "Fullname", "Birthday", "Address", "Phone Number", "Expiration Date", "Deposit"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -134,8 +134,8 @@ public class ManageUser extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 161, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE))
         );
 
         pack();
@@ -153,6 +153,7 @@ public class ManageUser extends javax.swing.JFrame {
             String address = dialog.getAddress();
             String phone = dialog.getPhone();
             Date expirationDate = dialog.getExpirationDate();
+            int deposit = dialog.getDeposit();
             boolean flag = true;
             for (Users item : this.listUser) {
                 if (item.getUsername().equals(username)) {
@@ -162,7 +163,7 @@ public class ManageUser extends javax.swing.JFrame {
             }
             if (flag) {
                 Users user = new Users(username, password, fullname, birthday,
-                        address, phone, expirationDate);
+                        address, phone, expirationDate, deposit);
                 if (user.save()) {
                     JOptionPane.showMessageDialog(this, "Register successful");
                     this.listUser.add(user);
@@ -170,7 +171,8 @@ public class ManageUser extends javax.swing.JFrame {
                         df.format(user.getBirthday()), user.getAddress(),
                         user.getPhone(), df.format(user.getExpirationDate())});
                 } else {
-                    JOptionPane.showMessageDialog(this, "You do not have permission to create new account");
+                    JOptionPane.showMessageDialog(this, 
+                            "You do not have permission to create new account");
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Username exist!");
@@ -192,7 +194,7 @@ public class ManageUser extends javax.swing.JFrame {
             DialogUser dialog = new DialogUser(this, true);
             dialog.setValues(username, user.getPassword(), user.getFullname(),
                     user.getBirthday(), user.getAddress(), user.getPhone(),
-                    user.getExpirationDate());
+                    user.getExpirationDate(), user.getDeposit());
             dialog.disableUsername();
             dialog.setVisible(true);
             if (dialog.isModify()) {
@@ -202,6 +204,7 @@ public class ManageUser extends javax.swing.JFrame {
                 String address = dialog.getAddress();
                 String phone = dialog.getPhone();
                 Date expirationDate = dialog.getExpirationDate();
+                int deposit = dialog.getDeposit();
                 if (!password.equals(user.getPassword())) {
                     user.setPassword(password);
                 }
@@ -210,14 +213,17 @@ public class ManageUser extends javax.swing.JFrame {
                 user.setAddress(address);
                 user.setPhone(phone);
                 user.setExpirationDate(expirationDate);
+                user.setDeposit(deposit);
                 if (user.save()) {
                     this.model.setValueAt(fullname, selectedRow, 1);
                     this.model.setValueAt(df.format(birthday), selectedRow, 2);
                     this.model.setValueAt(address, selectedRow, 3);
                     this.model.setValueAt(phone, selectedRow, 4);
                     this.model.setValueAt(df.format(expirationDate), selectedRow, 5);
+                    this.model.setValueAt(deposit, selectedRow, 6);
                 } else {
-                    JOptionPane.showMessageDialog(this, "You do not have permission to save user");
+                    JOptionPane.showMessageDialog(this, 
+                            "You do not have permission to save user");
                 }
             }
         } else {
@@ -228,7 +234,8 @@ public class ManageUser extends javax.swing.JFrame {
     private void btnDeleteUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteUserActionPerformed
         int selectedRow = this.tbUser.getSelectedRow();
         String username = (String) this.tbUser.getValueAt(selectedRow, 0);
-        int result = JOptionPane.showConfirmDialog(this, "Are you sure want to remove "
+        int result = JOptionPane.showConfirmDialog(this, 
+                "Are you sure want to remove "
                 + this.tbUser.getValueAt(selectedRow, 0));
         if (result == JOptionPane.YES_OPTION) {
             for (Users user : this.listUser) {

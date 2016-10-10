@@ -7,6 +7,7 @@ package com.hk.gui;
 
 import com.hk.authenticate.AdminsAuth;
 import com.hk.authenticate.UsersAuth;
+import com.hk.database.Database;
 import javax.swing.JOptionPane;
 
 /**
@@ -19,6 +20,7 @@ public class Login extends javax.swing.JFrame {
      * Creates new form Login
      */
     public Login() {
+        Database.initialize();
         initComponents();
     }
 
@@ -126,7 +128,8 @@ public class Login extends javax.swing.JFrame {
         String password = String.valueOf(pfPassword.getPassword());
         if (this.rbReader.isSelected()) {
             if (UsersAuth.login(username, password)) {
-                JOptionPane.showMessageDialog(this, "Login as " + UsersAuth.getUser().getUsername());
+                new ReaderMain().setVisible(true);
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Login failed");
             }
@@ -139,7 +142,6 @@ public class Login extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Login failed");
             }
         }
-
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**
