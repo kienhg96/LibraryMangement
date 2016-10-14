@@ -8,8 +8,8 @@ select * from users;
 select * from categories;
 
 select * from borrows;
-
-select * from borrowdetails where borrowId = 11;
+delete from borrows where borrowId = 9;
+select * from borrowdetails ;
 
 select * from returnBooks;
 
@@ -107,7 +107,7 @@ where Books.CategoryId = Categories.CategoryId and bookId not in
 );
 
 -- sach dang muon cua user
-select bookID, borrowUser from borrowdetails, borrows
+select bookID, borrowUser, borrowDate from borrowdetails, borrows
 where borrows.borrowId = borrowdetails.borrowId and borrows.borrowUser like 'hk1' and 
 	borrowDetailId not in (
 	select borrowdetails.borrowDetailId from borrowdetails, returnbooks
@@ -125,3 +125,27 @@ ALTER TABLE borrows
 	drop column expirationDate;
 ALTER TABLE borrowDetails
 	add expirationDate Date not null;
+ALTER TABLE Users
+	ADD deposit INTEGER NOT NULL;
+    
+SELECT * from useruseruserid;
+SELECT 1 + 1 AS Solution;
+
+INSERT INTO subject SET subjectName = 'Anh';
+select * from subject;
+INSERT INTO essayquestion SET content = 'Khái niệm bằng chứng kiểm toán? Các loại bằng chứng kiểm toán?',
+	subjectId = 1, level = 1, description = 'none', answer = '234';
+
+select choicequestion.* from choicequestion, subject 
+	WHERE subject.subjectName LIKE 'Toan';
+
+INSERT INTO choiceanswer SET choiceQuestionId = 2, content = 'Cà mau', trueFalse = true;
+
+select choicequestion.content, choiceanswer.content 
+	from choicequestion, choiceanswer
+    where choicequestion.choiceQuestionId = choiceanswer.choiceQuestionId;
+select * from choiceanswer where choiceQuestionId = 1;
+
+SELECT choicequestion.* 
+	FROM choicequestion, subject 
+    WHERE choicequestion.subjectId = subject.subjectId AND subject.subjectName LIKE 'Toan';
