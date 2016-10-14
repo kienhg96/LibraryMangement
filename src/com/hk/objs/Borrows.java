@@ -32,7 +32,6 @@ public class Borrows {
         if (Database.checkBookAvailable(book)) {
             BorrowDetails detail = new BorrowDetails();
             detail.setBook(book);
-            detail.setReturnBook(null);
             this.borrowDetailList.add(detail);
             return true;
         } else {
@@ -43,11 +42,9 @@ public class Borrows {
     public boolean returnBook(Books book, int penalty, Date returnDate) {
         for (BorrowDetails detail : borrowDetailList) {
             if (detail.getBook().getBookId() == book.getBookId()) {
-                if (detail.getReturnBook() == null) {
-                    ReturnBooks rb = new ReturnBooks();
-                    rb.setPenalty(penalty);
-                    rb.setReturnDate(returnDate);
-                    detail.setReturnBook(rb);
+                if (detail.getReturnDate() == null) {
+                    detail.setPenalty(penalty);
+                    detail.setReturnDate(returnDate);
                     return true;
                 } else {
                     return false;
@@ -106,7 +103,7 @@ public class Borrows {
 
     public boolean save() {
         if (Database.saveBorrow(this)) {
-            for (int i = 0; i < this.borrowDetailList.size(); i++) {
+            for (int i = 0; i < borrowDetailList.size(); i++) {
                 if (!borrowDetailList.get(i).save(this)) {
                     return false;
                 }
@@ -122,9 +119,6 @@ public class Borrows {
         list = Database.getAllBorrowListByUser(user);
         for (Borrows item : list) {
             item.setBorrowDetailList(Database.getAllBorrowDetailListByBorrow(item));
-            for (BorrowDetails detail : item.getBorrowDetailList()) {
-                detail.setReturnBook(Database.getReturnBookByBorrowDetail(detail));
-            }
         }
         return list;
     }

@@ -17,7 +17,25 @@ public class BorrowDetails {
     private int borrowDetailId;
     private Books book;
     private Date expirationDate;
+    private Date returnDate;
+    private int penalty;
 
+    public Date getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(Date returnDate) {
+        this.returnDate = returnDate;
+    }
+
+    public int getPenalty() {
+        return penalty;
+    }
+
+    public void setPenalty(int penalty) {
+        this.penalty = penalty;
+    }
+    
     public Date getExpirationDate() {
         return expirationDate;
     }
@@ -25,20 +43,12 @@ public class BorrowDetails {
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = expirationDate;
     }
-    private ReturnBooks returnBook;
 
     public BorrowDetails() {
         this.borrowDetailId = -1;
         this.book = null;
-        this.returnBook = null;
-    }
-
-    public ReturnBooks getReturnBook() {
-        return returnBook;
-    }
-
-    public void setReturnBook(ReturnBooks returnBook) {
-        this.returnBook = returnBook;
+        this.penalty = 0;
+        this.returnDate = null;
     }
 
     public int getBorrowDetailId() {
@@ -58,14 +68,6 @@ public class BorrowDetails {
     }
 
     public boolean save(Borrows parentBorrows) {
-        boolean result = true;
-        if (Database.saveBorrowDetail(parentBorrows.getBorrowId(), this)) {
-            if (this.returnBook != null) {
-                result = this.returnBook.save(this);
-            }
-        } else {
-            result = false;
-        }
-        return result;
+        return Database.saveBorrowDetail(parentBorrows.getBorrowId(), this);
     }
 }

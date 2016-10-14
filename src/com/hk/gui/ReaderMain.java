@@ -61,7 +61,7 @@ public class ReaderMain extends javax.swing.JFrame {
         }
         for (Borrows borrow : listBorrow) {
             for (BorrowDetails detail : borrow.getBorrowDetailList()) {
-                if (detail.getReturnBook() == null) {
+                if (detail.getReturnDate() == null) {
                     Books book = detail.getBook();
                     borrowModel.addRow(new Object[]{
                         book.getBookId(),

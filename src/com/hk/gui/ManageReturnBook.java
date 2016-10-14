@@ -10,7 +10,6 @@ import com.hk.database.Database;
 import com.hk.objs.Books;
 import com.hk.objs.BorrowDetails;
 import com.hk.objs.Borrows;
-import com.hk.objs.ReturnBooks;
 import com.hk.objs.Users;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -282,7 +281,7 @@ public class ManageReturnBook extends javax.swing.JFrame {
             listBorrow = Borrows.getAllBorrowListByUser(user);
             for (Borrows borrow : listBorrow) {
                 for (BorrowDetails detail : borrow.getBorrowDetailList()) {
-                    if (detail.getReturnBook() == null) {
+                    if (detail.getReturnDate() == null) {
                         Books book = detail.getBook();
                         borrowTableModel.addRow(new Object[]{
                             book.getBookId(),
@@ -358,19 +357,19 @@ public class ManageReturnBook extends javax.swing.JFrame {
                         break;
                     }
                 }
-                ReturnBooks rb = new ReturnBooks();
-                rb.setPenalty((int) this.tbReturn.getValueAt(i, 6));
-                try {
-                    rb.setReturnDate(df.parse((String) this.tbReturn.getValueAt(i, 5)));
-                } catch (ParseException ex) {
-                    Logger.getLogger(ManageReturnBook.class.getName()).log(Level.SEVERE, null, ex);
-                }
                 for (Borrows borrow : listBorrow) {
                     boolean found = false;
                     for (BorrowDetails detail : borrow.getBorrowDetailList()) {
                         if (detail.getBook().getBookId() == bookId) {
-                            detail.setReturnBook(rb);
-                            detail.save(borrow);
+                            detail.setPenalty((int) this.tbReturn.getValueAt(i, 6));
+                            try {
+                                detail.setReturnDate(df.parse((String) this.tbReturn.getValueAt(i, 5)));
+                            } catch (ParseException ex) {
+                                Logger.getLogger(ManageReturnBook.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            if (!detail.save(borrow)){
+                                JOptionPane.showMessageDialog(this, "Error occur, see log for more infomation");
+                            } 
                             found = true;
                             break;
                         }

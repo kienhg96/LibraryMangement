@@ -11,7 +11,6 @@ import com.hk.objs.Books;
 import com.hk.objs.BorrowDetails;
 import com.hk.objs.Borrows;
 import com.hk.objs.Categories;
-import com.hk.objs.ReturnBooks;
 import com.hk.objs.Users;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -410,8 +409,8 @@ public class Database {
             try {
                 if (detail.getBorrowDetailId() == -1) {
                     PreparedStatement stmt = conn.prepareStatement(
-                            "INSERT INTO borrowdetails (borrowId, bookId, expirationDate)"
-                            + "VALUES (?, ?, ?)",
+                            "INSERT INTO borrowdetails SET "+
+                            "borrowId = ?, bookId = ?, expirationDate = ?",
                             Statement.RETURN_GENERATED_KEYS);
                     stmt.setInt(1, borrowId);
                     stmt.setInt(2, detail.getBook().getBookId());
@@ -424,42 +423,17 @@ public class Database {
                 } else {
                     PreparedStatement stmt = conn.prepareStatement(
                             "UPDATE borrowdetails "
-                            + "SET borrowId = ?, bookId = ?, expirationDate = ? "
+                            + "SET borrowId = ?, bookId = ?, expirationDate = ?, "
+                            + "returnDate = ?, penalty = ? "
                             + "WHERE borrowDetailId = ?");
                     stmt.setInt(1, borrowId);
                     stmt.setInt(2, detail.getBook().getBookId());
                     stmt.setDate(3, utilDateToSqlDate(detail.getExpirationDate()));
-                    stmt.setInt(4, detail.getBorrowDetailId());
+                    stmt.setDate(4, utilDateToSqlDate(detail.getReturnDate()));
+                    stmt.setInt(5, detail.getPenalty());
+                    stmt.setInt(6, detail.getBorrowDetailId());
                     stmt.executeUpdate();
                 }
-            } catch (SQLException ex) {
-                System.out.println("SQLException: " + ex.getMessage());
-                System.out.println("SQLState: " + ex.getSQLState());
-                System.out.println("VendorError: " + ex.getErrorCode());
-                return false;
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static boolean saveReturnBook(int borrowDetailId, ReturnBooks rb) {
-        //initialize(); // Remove after complete
-        if (AdminsAuth.getAdmin() != null) {
-            try {
-                PreparedStatement stmt = conn.prepareStatement(
-                        "INSERT INTO returnbooks "
-                        + "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE "
-                        + "returnDate = ?, penalty = ?");
-                java.sql.Date returnDate
-                        = new java.sql.Date(rb.getReturnDate().getTime());
-                stmt.setInt(1, borrowDetailId);
-                stmt.setDate(2, returnDate);
-                stmt.setInt(3, rb.getPenalty());
-                stmt.setDate(4, returnDate);
-                stmt.setInt(5, rb.getPenalty());
-                stmt.executeUpdate();
             } catch (SQLException ex) {
                 System.out.println("SQLException: " + ex.getMessage());
                 System.out.println("SQLState: " + ex.getSQLState());
@@ -658,10 +632,9 @@ public class Database {
         Categories category;
         String sql = "select Books.*, Categories.categoryName, Categories.description "
                 + "from books, categories "
-                + "where Books.CategoryId = Categories.CategoryId and bookId not in "
-                + "(select bookID from borrowdetails where borrowDetailId not in "
-                + "(select borrowdetails.borrowDetailId from borrowdetails, returnbooks "
-                + "where borrowDetails.borrowDetailId = returnbooks.borrowDetailId));";
+                + "where Books.CategoryId = Categories.CategoryId and "
+                + "Books.bookId NOT IN "
+                + "(SELECT bookId FROM borrowdetails WHERE returnDate IS NULL)";
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -693,15 +666,11 @@ public class Database {
         ArrayList<Books> list = new ArrayList<>();
         Books book;
         Categories category;
-        String sql
-                = "select Books.*, Categories.categoryName, Categories.description "
-                + "from borrowdetails, Books, Categories "
-                + "where Books.bookId = borrowdetails.bookId "
-                + "and Books.CategoryId = Categories.CategoryId "
-                + "and borrowDetailId not in ( "
-                + "select borrowdetails.borrowDetailId "
-                + "from borrowdetails, returnbooks "
-                + "where borrowDetails.borrowDetailId = returnbooks.borrowDetailId );";
+        String sql = "select Books.*, Categories.categoryName, Categories.description "
+                + "from books, categories, borrowdetails "
+                + "where Books.CategoryId = Categories.CategoryId and "
+                + "Books.bookId = borrowdetails.bookId and "
+                + "borrowdetails.returnDate IS NULL";
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -732,15 +701,13 @@ public class Database {
     public static boolean checkBookAvailable(Books book) {
         boolean result = true;
         String sql
-                = "select bookID from borrowdetails "
-                + "where bookId = ? and borrowDetailId not in ( "
-                + "select borrowdetails.borrowDetailId from borrowdetails, returnbooks "
-                + "where borrowDetails.borrowDetailId = returnbooks.borrowDetailId)";
+                = "select bookId from borrowdetails "
+                + "where bookId = ? and returnDate is NULL ";
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, book.getBookId());
             ResultSet rs = stmt.executeQuery();
-            return !rs.next();
+            result = !rs.next();
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
@@ -837,6 +804,8 @@ public class Database {
                 detail.setBook(findBookById(rs.getInt("bookId")));
                 detail.setBorrowDetailId(rs.getInt("borrowDetailId"));
                 detail.setExpirationDate(rs.getDate("expirationDate"));
+                detail.setReturnDate(rs.getDate("returnDate"));
+                detail.setPenalty(rs.getInt("penalty"));
                 list.add(detail);
             }
         } catch (SQLException ex) {
@@ -845,26 +814,6 @@ public class Database {
             System.out.println("VendorError: " + ex.getErrorCode());
         }
         return list;
-    }
-
-    public static ReturnBooks getReturnBookByBorrowDetail(BorrowDetails detail) {
-        ReturnBooks rb = null;
-        try {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT * FROM returnbooks WHERE borrowDetailId = ?");
-            stmt.setInt(1, detail.getBorrowDetailId());
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                rb = new ReturnBooks();
-                rb.setPenalty(rs.getInt("penalty"));
-                rb.setReturnDate(rs.getDate("returnDate"));
-            }
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }
-        return rb;
     }
 
     public static boolean removeCategory(Categories category) {
@@ -898,5 +847,9 @@ public class Database {
 
     public static void main(String[] args) {
         initialize();
+        Borrows br = new Borrows();
+        br.setBorrowId(12);
+        ArrayList<BorrowDetails> list = getAllBorrowDetailListByBorrow(br);
+        
     }
 }

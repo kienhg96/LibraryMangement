@@ -146,6 +146,21 @@ select choicequestion.content, choiceanswer.content
     where choicequestion.choiceQuestionId = choiceanswer.choiceQuestionId;
 select * from choiceanswer where choiceQuestionId = 1;
 
+select * from choicequestion ;
+select * from subject where subjectName LIKE 'Toan';
+
 SELECT choicequestion.* 
 	FROM choicequestion, subject 
-    WHERE choicequestion.subjectId = subject.subjectId AND subject.subjectName LIKE 'Toan';
+    WHERE choicequestion.subjectId = subject.subjectId 
+    AND subject.subjectName LIKE 'Van';
+
+select * from books where bookId not in(    
+	select bookId from borrowdetails where returnDate is NULL);
+    
+select * from borrowdetails;
+update borrowdetails set penalty = 10000 where borrowDetailId = 15;
+ALTER TABLE borrowdetails 
+	ADD returnDate DATE;
+ALTER TABLE borrowdetails 
+	ADD penalty INTEGER;
+DROP TABLE returnbooks;

@@ -43,20 +43,10 @@ CREATE TABLE BorrowDetails(
 	borrowDetailId INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	borrowId INTEGER NOT NULL,
     bookId INTEGER NOT NULL,
-	expirationDate DATE NOT NULL
-);
-
-CREATE TABLE ReturnBooks(
-	borrowDetailId INTEGER NOT NULL PRIMARY KEY,
-    returnDate DATE NOT NULL,
+	expirationDate DATE NOT NULL,
+    returnDate DATE,
     penalty INTEGER
 );
-
-
-ALTER TABLE returnbooks
-	ADD CONSTRAINT fkBorrowDetail foreign key (borrowDetailId) 
-    references BorrowDetails(borrowDetailId) ON DELETE CASCADE;
-
 
 ALTER TABLE Books
 	ADD CONSTRAINT fkCategory FOREIGN KEY (categoryId) 
