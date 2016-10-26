@@ -287,8 +287,10 @@ public class DialogBook extends javax.swing.JDialog {
         } else if ((int) this.spNumberBook.getValue() < 1) {
             JOptionPane.showMessageDialog(this, "Number of book is invalid");
         } else {
-            this.modify = true;
-            this.dispose();
+            if (JOptionPane.showConfirmDialog(this, "Are you sure want to add, edit this book?") == JOptionPane.YES_OPTION){
+                this.modify = true;
+                this.dispose();
+            }
         }
     }//GEN-LAST:event_btnOKActionPerformed
 

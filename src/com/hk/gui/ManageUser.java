@@ -7,12 +7,26 @@ package com.hk.gui;
 
 import com.hk.authenticate.AdminsAuth;
 import com.hk.objs.Users;
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 
 /**
  *
@@ -57,6 +71,15 @@ public class ManageUser extends javax.swing.JFrame {
         btnDeleteUser = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        txtFilterUsername = new javax.swing.JTextField();
+        txtFilterFullname = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        txtFilterAddress = new javax.swing.JTextField();
+        txtFilterPhone = new javax.swing.JTextField();
+        btnFilter = new javax.swing.JButton();
+        btnClearFilter = new javax.swing.JButton();
+        btnExport = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Manage Reader");
@@ -104,6 +127,31 @@ public class ManageUser extends javax.swing.JFrame {
 
         jLabel2.setText("Filter by Fullname");
 
+        jLabel3.setText("Filter By Address");
+
+        jLabel4.setText("Filter By Phone");
+
+        btnFilter.setText("Filter");
+        btnFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFilterActionPerformed(evt);
+            }
+        });
+
+        btnClearFilter.setText("Clear Filter");
+        btnClearFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearFilterActionPerformed(evt);
+            }
+        });
+
+        btnExport.setText("Export");
+        btnExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -113,15 +161,43 @@ public class ManageUser extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtFilterFullname))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtFilterUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(btnAddUser)
                         .addGap(18, 18, 18)
                         .addComponent(btnEditUser)
                         .addGap(18, 18, 18)
-                        .addComponent(btnDeleteUser))
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btnDeleteUser)))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtFilterPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnClearFilter))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtFilterAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnFilter))
+                    .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(210, Short.MAX_VALUE))
         );
+
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {txtFilterAddress, txtFilterFullname, txtFilterPhone, txtFilterUsername});
+
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnClearFilter, btnFilter});
+
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -129,13 +205,24 @@ public class ManageUser extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddUser)
                     .addComponent(btnEditUser)
-                    .addComponent(btnDeleteUser))
+                    .addComponent(btnDeleteUser)
+                    .addComponent(btnExport))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtFilterUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtFilterAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFilter))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtFilterFullname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtFilterPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnClearFilter))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
         );
 
         pack();
@@ -171,7 +258,7 @@ public class ManageUser extends javax.swing.JFrame {
                         df.format(user.getBirthday()), user.getAddress(),
                         user.getPhone(), df.format(user.getExpirationDate())});
                 } else {
-                    JOptionPane.showMessageDialog(this, 
+                    JOptionPane.showMessageDialog(this,
                             "You do not have permission to create new account");
                 }
             } else {
@@ -222,7 +309,7 @@ public class ManageUser extends javax.swing.JFrame {
                     this.model.setValueAt(df.format(expirationDate), selectedRow, 5);
                     this.model.setValueAt(deposit, selectedRow, 6);
                 } else {
-                    JOptionPane.showMessageDialog(this, 
+                    JOptionPane.showMessageDialog(this,
                             "You do not have permission to save user");
                 }
             }
@@ -233,21 +320,152 @@ public class ManageUser extends javax.swing.JFrame {
 
     private void btnDeleteUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteUserActionPerformed
         int selectedRow = this.tbUser.getSelectedRow();
-        String username = (String) this.tbUser.getValueAt(selectedRow, 0);
-        int result = JOptionPane.showConfirmDialog(this, 
-                "Are you sure want to remove "
-                + this.tbUser.getValueAt(selectedRow, 0));
-        if (result == JOptionPane.YES_OPTION) {
-            for (Users user : this.listUser) {
-                if (user.getUsername().equals(username)) {
-                    if (user.delete()) {
-                        this.model.removeRow(selectedRow);
+        if (selectedRow == -1) {
+            String username = (String) this.tbUser.getValueAt(selectedRow, 0);
+            int result = JOptionPane.showConfirmDialog(this,
+                    "Are you sure want to remove "
+                    + this.tbUser.getValueAt(selectedRow, 0));
+            if (result == JOptionPane.YES_OPTION) {
+                for (Users user : this.listUser) {
+                    if (user.getUsername().equals(username)) {
+                        if (user.delete()) {
+                            this.model.removeRow(selectedRow);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
+        } else {
+            JOptionPane.showMessageDialog(this, "You must choose one user");
         }
     }//GEN-LAST:event_btnDeleteUserActionPerformed
+
+    private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
+        Pattern pattern1 = Pattern.compile("(?i).*"
+                + txtFilterUsername.getText() + ".*");
+        Pattern pattern2 = Pattern.compile("(?i).*"
+                + txtFilterFullname.getText() + ".*");
+        Pattern pattern3 = Pattern.compile("(?i).*"
+                + txtFilterAddress.getText() + ".*");
+        Pattern pattern4 = Pattern.compile("(?i).*"
+                + txtFilterPhone.getText() + ".*");
+        for (Users user : this.listUser) {
+            if (pattern1.matcher(user.getUsername()).matches()
+                    && pattern2.matcher(user.getFullname()).matches()
+                    && pattern3.matcher(user.getAddress()).matches()
+                    && pattern4.matcher(user.getPhone()).matches()) {
+                model.addRow(new Object[]{user.getUsername(), user.getFullname(),
+                    df.format(user.getBirthday()), user.getAddress(),
+                    user.getPhone(), df.format(user.getExpirationDate()),
+                    user.getDeposit()
+                });
+            }
+        }
+
+
+    }//GEN-LAST:event_btnFilterActionPerformed
+
+    private void btnClearFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearFilterActionPerformed
+        txtFilterAddress.setText("");
+        txtFilterFullname.setText("");
+        txtFilterPhone.setText("");
+        txtFilterUsername.setText("");
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
+        for (Users user : this.listUser) {
+            model.addRow(new Object[]{user.getUsername(), user.getFullname(),
+                df.format(user.getBirthday()), user.getAddress(),
+                user.getPhone(), df.format(user.getExpirationDate()),
+                user.getDeposit()
+            });
+        }
+    }//GEN-LAST:event_btnClearFilterActionPerformed
+
+    private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
+        JFileChooser fc = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel files (*.xls)", "xls");
+        fc.setFileFilter(filter);
+        int rt = fc.showSaveDialog(this);
+        if (rt == JFileChooser.APPROVE_OPTION) {
+            try {
+                String filepath = fc.getSelectedFile().getPath();
+                if (filepath.indexOf(".") == -1) {
+                    filepath = filepath + ".xls";
+                }
+                WritableWorkbook workbook = Workbook.createWorkbook(
+                        new File(filepath));
+                WritableSheet sheet = workbook.createSheet("Result", 0);
+                sheet.addCell(new Label(0, 0, "FILTER LIST"));
+                rt = 0;
+                sheet.addCell(new Label(0, 0, "FILTER LIST"));
+                if (!txtFilterUsername.getText().equals("")) {
+                    sheet.addCell(new Label(rt, 2, "Filter by Username"));
+                    sheet.addCell(new Label(rt++, 3, txtFilterUsername.getText()));
+                }
+                if (!txtFilterFullname.getText().equals("")) {
+                    sheet.addCell(new Label(rt, 2, "Filter by Fullname"));
+                    sheet.addCell(new Label(rt++, 3, txtFilterFullname.getText()));
+                }
+                if (!txtFilterAddress.getText().equals("")) {
+                    sheet.addCell(new Label(rt, 2, "Filter by Address"));
+                    sheet.addCell(new Label(rt++, 3, txtFilterAddress.getText()));
+                }
+                if (!txtFilterPhone.getText().equals("")) {
+                    sheet.addCell(new Label(rt, 2, "Filter by Phone"));
+                    sheet.addCell(new Label(rt++, 3, txtFilterPhone.getText()));
+                }
+              
+                sheet.addCell(new Label(0, 5, "RESULT:"));
+                TableModel model = tbUser.getModel();
+                // Label
+                for (int i = 0; i < model.getColumnCount(); i++) {
+                    sheet.addCell(new Label(i, 7, model.getColumnName(i)));
+                }
+                // Username
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    sheet.addCell(new Label(0, 8 + i, (String) tbUser.getValueAt(i, 0)));
+                }
+                // Fullname
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    sheet.addCell(new Label(1, 8 + i, (String) tbUser.getValueAt(i, 1)));
+                }
+                // Birthday
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    sheet.addCell(new jxl.write.DateTime(2, 8 + i, 
+                            df.parse((String) tbUser.getValueAt(i, 2))));
+                }
+                // Address
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    sheet.addCell(new Label(3, 8 + i, (String) tbUser.getValueAt(i, 3)));
+                }
+                // Phone
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    sheet.addCell(new Label(4, 8 + i, (String) tbUser.getValueAt(i, 4)));
+                }
+                // Expiration date
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    sheet.addCell(new jxl.write.DateTime(5, 8 + i, 
+                            df.parse((String) tbUser.getValueAt(i, 5))));
+                }
+                // Deposite
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    sheet.addCell(new jxl.write.Number(6, 8 + i, 
+                            (int) tbUser.getValueAt(i, 6)));
+                }
+                workbook.write();
+                workbook.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ManageBook.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            } catch (WriteException ex) {
+                Logger.getLogger(ManageBook.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(ManageUser.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_btnExportActionPerformed
 
     /**
      * @param args the command line arguments
@@ -286,11 +504,20 @@ public class ManageUser extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddUser;
+    private javax.swing.JButton btnClearFilter;
     private javax.swing.JButton btnDeleteUser;
     private javax.swing.JButton btnEditUser;
+    private javax.swing.JButton btnExport;
+    private javax.swing.JButton btnFilter;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tbUser;
+    private javax.swing.JTextField txtFilterAddress;
+    private javax.swing.JTextField txtFilterFullname;
+    private javax.swing.JTextField txtFilterPhone;
+    private javax.swing.JTextField txtFilterUsername;
     // End of variables declaration//GEN-END:variables
 }

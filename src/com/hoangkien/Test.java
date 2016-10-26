@@ -5,40 +5,25 @@
  */
 package com.hoangkien;
 
-import com.hk.authenticate.AdminsAuth;
-import com.hk.database.Database;
-import com.hk.objs.Users;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.text.DateFormatSymbols ;
+public class Test {
 
-/**
- *
- * @author hoangkien
- */
+//    void f1(short x) {
+//        System.out.println("short");
+//    }
 
-public class Test{
-    private int x;
-   public void show(){
-       System.out.println(x);
-   }
+    void f1(int x) {
+        System.out.println("int");
+    }
+
+    void f1(long x) {
+        System.out.println("long");
+    }
+
+    void f1(float x) {
+        System.out.println("float");
+    }
+
     public static void main(String[] args) {
-       new Test().show();
+        new Test().f1((short)214);
     }
 }

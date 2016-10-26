@@ -5,7 +5,6 @@
  */
 package com.hk.gui;
 
-import com.hk.authenticate.AdminsAuth;
 import com.hk.database.Database;
 import com.hk.objs.Books;
 import com.hk.objs.BorrowDetails;
@@ -270,6 +269,7 @@ public class ManageReturnBook extends javax.swing.JFrame {
         borrowTableModel.fireTableDataChanged();
         returnTableModel.getDataVector().removeAllElements();
         returnTableModel.fireTableDataChanged();
+        
         int selectedRow = tbUser.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "You must choose one user");

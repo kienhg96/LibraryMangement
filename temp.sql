@@ -148,7 +148,7 @@ select * from choiceanswer where choiceQuestionId = 1;
 
 select * from choicequestion ;
 select * from subject where subjectName LIKE 'Toan';
-
+select * from books;
 SELECT choicequestion.* 
 	FROM choicequestion, subject 
     WHERE choicequestion.subjectId = subject.subjectId 
@@ -157,6 +157,8 @@ SELECT choicequestion.*
 select * from books where bookId not in(    
 	select bookId from borrowdetails where returnDate is NULL);
     
+    SELECT bookId FROM borrowdetails WHERE bookId IS NULL;
+
 select * from borrowdetails;
 update borrowdetails set penalty = 10000 where borrowDetailId = 15;
 ALTER TABLE borrowdetails 
@@ -164,3 +166,17 @@ ALTER TABLE borrowdetails
 ALTER TABLE borrowdetails 
 	ADD penalty INTEGER;
 DROP TABLE returnbooks;
+delete from borrowdetails where borrowDetailId = 16;
+select * from borrows;
+select * from borrowdetails;
+update borrowdetails set penalty = 0 where borrowDetailId > 0;
+SELECT * FROM customer WHERE phone LIKE '0123456789';
+select * from customer;
+delete from driver where driverId >2;
+select * from driver;
+
+ALTER TABLE subject
+	modify subjectName VARCHAR(200) NOT NULL unique;
+    
+select * from subject;
+select * from essayquestion;

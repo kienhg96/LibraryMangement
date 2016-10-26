@@ -7,7 +7,6 @@ package com.hk.objs;
 
 import com.hk.database.Database;
 import java.util.ArrayList;
-import com.hk.objs.Categories;
 
 /**
  *

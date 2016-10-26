@@ -150,7 +150,6 @@ public class Database {
 
             stmt.setString(1, username);
             stmt.setString(2, password);
-            //System.out.println(stmt);
             ResultSet result = stmt.executeQuery();
             if (result.next()) {
                 String fullname = result.getString("fullname");
